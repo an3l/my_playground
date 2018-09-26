@@ -1,0 +1,23 @@
+# Byte-compiled files
+__pycache__/
+*.pyc
+*.py[cod]
+*$py.class
+*.swp
+
+#C extensions
+*.so
+
+# Flask stuff:
+instance/
+.weassets-cache
+flask_session/
+
+#Environments
+.env
+.venv
+venv/
+env/
+env
+env.bak/
+venv.bak/

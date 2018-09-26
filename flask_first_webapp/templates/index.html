@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset= "UTF-8">
+    <!-- Jinja2 template engine used
+      for Flask and python 
+    -->
+    <title>  {{ headline }}</title>
+    <style>  
+body {
+  text-align: center;
+}
+    </style>
+  </head>
+
+  <body>
+    <h1> Anel Husakovic </h1>
+    <h2> {{ headline }} </h2>
+    <!--Conditions inside Jinja2  -->
+    {% if holiday %}
+    <h3> Yupiii, it is holiday !</h3>
+    {% else %}
+    <h3> No it is not a holiday !</h3>
+    {% endif %}
+    <h4> Names of best anime: </h4>
+    <ul>
+      <!-- Jinja2 same as for conditions -->
+      {% for name in names %}
+      <li> {{ name }}</li>
+      {% endfor %}
+    </ul>
+  </body>
+
+</html>
+
+

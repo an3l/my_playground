@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{%block headings %}
+Second Page
+{% endblock%}
+
+{% block body %}
+<p> Loremipsum Page 2</p>
+<a href="{{ url_for('first_page')}}"> Link to first page  </a>
+{% endblock%}
