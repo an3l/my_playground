@@ -21,3 +21,6 @@ env/
 env
 env.bak/
 venv.bak/
+
+#Other
+*.tar.gz
