@@ -22,6 +22,10 @@ For getting started see the link [get-code-build-test](https://mariadb.org/get-i
   From build directory (`./builds/build-mariadb-10.1`) run `cmake` to configure the files (as a source directory one can use linked work tree directory (created by `git worktree add`) or main work tree directory):
   
   `cmake ../../mariadb-server-10.1 -DCONC_WITH_{UNITTEST,SSL}=OFF -DWITH_EMBEDDED_SERVER=OFF -DWITH_UNIT_TESTS=OFF -DCMAKE_BUILD_TYPE=Debug -DPLUGIN_{ARCHIVE,TOKUDB,MROONGA,OQGRAPH,ROCKSDB,CONNECT,SPIDER,SPHINX}=NO -DWITH_SAFEMALLOC=OFF -DWITH_SSL=bundled -G Ninja`
+  The same goes for other branches, so from your build directories run:
+  `cmake ../../mariadb-server-10.2`
+  `cmake ../../mariadb-server-10.3`
+  `cmake ../../mariadb-server-10.4`
   To build the files, from build directory run `ninja` or `make`.
   
   * Start the server from build directory without use of `~/.my.cnf`
