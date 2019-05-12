@@ -137,9 +137,35 @@ Migrations for '_fligths_app':
       >>> f = Flight(origin="NY", destination="Sarajevo", duration=480)
       >>> f.save()
       >>> Flight.objects.all()
-      >>>  f=Flight.objects.first() # access flight f.origin
+      >>> f=Flight.objects.first() # access flight f.origin
       >>> f.delete()
     ```
+9) Add new Model and foreign keys and migrat
+./manage.py makemigrations
+ ```
+ - Create model Airport
+- Alter field destination on flight
+- Alter field origin on flight
+ ```
+./manage.py migrate #apply migration
+* Test it in Shell
+  >>> a1 = Airport(code="NYC", city="New York")
+  >>> a1
+  <Airport: New York (NYC)>
+  >>> a1.save()
+  >>> a2.save()
+  >>> Airport.objects.all()
+  <QuerySet [<Airport: New York (NYC)>, <Airport: Sarajevo (SA)>]>
+  >>> f=Flight(origin=a1, destination=a2, duration=343)
+  >>> f
+  <Flight: from New York (NYC) to Sarajevo (SA)>
+  >>> a1.departures.all()
+  <QuerySet [<Flight: from New York (NYC) to Sarajevo (SA)>]>
+  >>> a2.departures.all()
+  >>> a2.arrivals.all()
+  <QuerySet [<Flight: from New York (NYC) to Sarajevo (SA)>]>
+
+
 
 ================== Old tutorial =============
 Add app to settings.py
