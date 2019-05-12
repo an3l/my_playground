@@ -1,0 +1,319 @@
+=========================================
+Getting started with djang0
+=========================================
++++ Install virtualenv
+Install packages using pip (python package manager used to install and update packages) and virtual env1
+https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/
+Latest version of pip
+```
+>>python3 -m pip install --user --upgrade pip
+>>python3 -m pip --version
+pip 19.1.1 from /home/anel/.local/lib/python3.6/site-packages/pip (python 3.6)
+```
+
+When using python3 or newer it is better to use `venv`
+https://docs.python.org/3.6/library/venv.html#module-venv
+* sudo apt install python3-venv
+
+// python2
+*sudo apt instal virtualenv (ili je pip install)
+additionally (pip install virtualenwrapper) (see bellow more or in Project: django and nginx)
+
+1)Create virtualenvironment
+//python3 (-m => module script)
+* python3 -m venv /home/anel/workspace/eacon/web-workspace/django/my_projects
+// python2
+* virtualenv project-flights
+* virtualenv -h
+2) Get into virtualenvironment
+*source bin/activate # to get into (project-flights) environment and modify shell ; echo $PATH /home/anel/ENV/bin
+* which python && which python3
+Inside env/bin there are python2 and python3 exectuables
+
+**Note additinoally** Using virtualenwrapper.sh
+https://virtualenvwrapper.readthedocs.io/en/latest/
+
+*mkvirtualenv env1
+*ls $WORKON_HOME
+*mkvirtualenv env2
+*workon env1
+*(env1)$ echo $VIRTUAL_ENV
+
+3) Install django => "django-admin.py"
+*(env1)$ pip install django
+// python3 (installed via pip install django without --upgrade django, but pip is updated (see above))
+python -m django --version
+2.2.1
+// python 2
+* python -m django --version
+1.11.20
+*(env1)$ lssitepackages # see the new packages
+
+postmkvirtualenv is run when a new environment is created, letting you automatically install commonly-used tools.
+*(env2)$ echo 'pip install sphinx' >> $WORKON_HOME/postmkvirtualenv
+*(env2)$ mkvirtualenv env3
+*(env3)$ which sphinx-build
+
+===========================
+django
+
+
+4) Start *project* "mysite" or "flights" = > "manage.py" and "fligts/"
+   In "flights/" (__init__.py, settings.py, urls.py, wsgi.py)
+```
+  django-admin startproject mysite
+	django-admin version
+```
+https://docs.djangoproject.com/en/1.11/ref/django-admin/
+5) Start django application
+```
+	python manage.py startapp polls
+```
+Development server, automatic reload
+	python manage.py runserver 0:8000  # for all hosts on network; without 0: only localhost
+Migrate tables from INSTALLED_APPS (django.contrib.admin etc), change Time_zone to Europe/Sarajevo and set database in mysites/settings.py
+	python manage.py migrate
+	sudo apt-get install sqlite3 libsqlite3-dev
+5.1) It is good to create a custom urls.py per application (see flight_app/urls.py)
+5.2) DJango looks project-fligths/urls.py not our specific one, so we have to link it.
+        ```
+        from django.urls import include, path
+        path("", include("fligth_app.urls")),
+        ```
+
+Add app to settings.py
+	'polls.apps.PollsConfig'
+	python manage.py makemigrations polls
+	(ENV) webuser@ubuntu:~/ENV/mysite$ python manage.py check
+	System check identified no issues (0 silenced).
+
+	python manage.py sqlmigrate polls 0001
+BEGIN;
+--
+-- Create model Choice
+--
+CREATE TABLE "polls_choice" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "choice_text" varchar(200) NOT NULL, "votes" integer NOT NULL);
+--
+-- Create model Question
+--
+CREATE TABLE "polls_question" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "question_text" varchar(200) NOT NULL, "pub_date" datetime NOT NULL);
+--
+-- Add field question to choice
+--
+ALTER TABLE "polls_choice" RENAME TO "polls_choice__old";
+CREATE TABLE "polls_choice" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "choice_text" varchar(200) NOT NULL, "votes" integer NOT NULL, "question_id" integer NOT NULL REFERENCES "polls_question" ("id"));
+INSERT INTO "polls_choice" ("choice_text", "votes", "id", "question_id") SELECT "choice_text", "votes", "id", NULL FROM "polls_choice__old";
+DROP TABLE "polls_choice__old";
+CREATE INDEX "polls_choice_question_id_c5b4b260" ON "polls_choice" ("question_id");
+COMMIT;
+
+Shell
+	python manage.py shell
+	>> from polls.models import Question, Choice
+	>> Question.objects.all()
+	>> from django.utils import timezone
+	>>> q = Question(question_text="What's new?", pub_date=
+)
+	# Save the object into the database. You have to call save() explicitly.
+	>>> q.save()
+
+Adding __str__()
+https://docs.djangoproject.com/en/1.11/ref/models/instances/#django.db.models.Model.__str__
+https://docs.python.org/3/library/datetime.html#module-datetime
+https://docs.djangoproject.com/en/1.11/ref/utils/#module-django.utils.timezone
+https://docs.djangoproject.com/en/1.11/topics/i18n/timezones/
+
+https://docs.djangoproject.com/en/1.11/intro/tutorial02/
+shell:
+>>> from polls.models import Question, Choice
+>>> Question.objects.all()
+# Make sure our custom method worked.
+>>> q = Question.objects.get(pk=1)
+>>> q.choice_set.all()
+>>> q.choice_set.create(choice_text='Not much', votes=0)
+<Choice: Not much>
+>>> q.choice_set.create(choice_text='The sky', votes=0)
+>>> c = q.choice_set.create(choice_text='Just hacking again', votes=0)
+
+Databases
+https://docs.djangoproject.com/en/1.11/ref/models/relations/
+https://docs.djangoproject.com/en/1.11/topics/db/queries/#field-lookups-intro
+https://docs.djangoproject.com/en/1.11/topics/db/queries/
+https://docs.djangoproject.com/en/1.11/ref/models/fields/#foreign-key-arguments
+
+
+
+
+Create a super user
+python manage.py createsuperuser
+
+
+
+Tutorial 3
+https://docs.djangoproject.com/en/1.11/intro/tutorial03/
+https://docs.djangoproject.com/en/1.11/ref/urlresolvers/#module-django.urls
+https://docs.djangoproject.com/en/1.11/topics/templates/
+
+Tutorial 4
+https://docs.djangoproject.com/en/1.11/intro/tutorial04/
+https://docs.djangoproject.com/en/1.11/topics/class-based-views/
+
+Tutorial 5 tests-driven development
+https://docs.djangoproject.com/en/1.11/intro/tutorial05/
+https://docs.djangoproject.com/en/1.11/topics/testing/advanced/#django.test.utils.setup_test_environment
+https://docs.djangoproject.com/en/1.11/topics/testing/tools/#django.test.LiveServerTestCase
+
+
+=========================================
+Project: How to use django with nginx
+=========================================
+Detailed procedures:
+
+apt install python
+apt install python-pip
+apt install nginx
+pip install virtualenv
+pip install virtualenvwrapper
+pip install uwsgi
+
+adduser deploy
+su - deploy
+## for virtualenv projects
+mkdir projects
+## for django webpages
+mkdir web
+
+## add virtualenv environment variables to user deploy
+which virtualenvwrapper.sh
+/home/anel/.local/bin/virtualenvwrapper.sh
+/home/webuser/.local/bin/virtualenvwrapper.sh
+
+vi /home/deploy/.bashrc
+...
+export WORKON_HOME=~/projects
+source /home/webuser/.local/bin/virtualenvwrapper.sh
+
+mkvirtualenv p1
+pip install django
+
+## Test django version (django == module)
+webuser@ubuntu:~/web$ workon p1
+(p1) webuser@ubuntu:~/web$ python -m django --version
+1.11.20
+
+cd ~/web/
+django-admin.py startproject d1
+cd d1
+./manage.py migrate
+vi d1/settings.py
+
+ALLOWED_HOSTS = ['localhost'] # see /sbin/ifconfig for the right address
+...
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+
+
+./manage.py collectstatic
+./manage.py runserver 0.0.0.0:5000
+##open web brower to test
+
+## quit virtualenv
+deactivate
+
+## change back to root or sudo -i
+=========================================
+mkdir -p /etc/uwsgi/sites_anel/
+
+## create config file for uwsgi
+vi /etc/uwsgi/sites_anel/p1.ini
+[uwsgi]
+uid = webuser
+base = /home/%(uid)
+
+chdir = %(base)/web/d1
+home = %(base)/projects/p1
+module = d1.wsgi:application
+
+master = true
+processes = 5
+
+socket = /run/uwsgi/p1.sock
+chown-socket = %(uid):www-data
+chmod-socket = 660
+vacuum = true
+
+## test uwsgi with django
+uwsgi --master --http :5000 --home /home/webuser/projects/p1 --chdir /home/webuser/web/d1 --module d1.wsgi:application
+## open web brower to test, and you will find the images and styles are gone,
+as uwsgi doesn't know where to service the static content from django.  We will get to that in nginx configuration part.
+which uwsgi
+/home/anel/.local/bin/uwsgi
+
+
+## create a service to start uwsgi automatically
+vi /etc/systemd/system/uwsgi.service
+[Unit]
+Description=uWSGI Emperor
+
+[Service]
+ExecStartPre=/bin/bash -c 'mkdir -p /run/uwsgi; chown webuser:www-data /run/uwsgi'
+ExecStart=/home/anel/.local/bin/uwsgi --emperor /etc/uwsgi/sites-anel/
+Restart=always
+KillSignal=SIGQUIT
+Type=notify
+StandardError=syslog
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target
+
+
+systemctl daemon-reload
+systemctl restart uwsgi.service
+systemctl status uwsgi.service
+
+
+=========================
+nginx
+
+sudo vim /etc/nginx/sites-available/p1.conf?
+
+server {
+  listen 9090;
+  server_name 127.0.0.1;
+  location = /favicon.ico { access_log off; log_not_found off; }
+  location /static/ {
+    root /home/webuser/web/d1;
+  }
+  location / {
+    include uwsgi_params;
+    uwsgi_pass unix:/run/uwsgi/p1.sock;
+  }
+}
+
+
+sudo mkdir /etc/nginx/sites-enable
+sudo ln -s /etc/nginx/sites-available/p1 /etc/nginx/sites-enable/
+
+
+=================================================
+502 gateway error
+
+sudo tail -10 /var/log/nginx/error.log
+
+change uwsgi.ini from 660 to 664 => nothing
+change /etc/uwsgi/sites-anel/p1.ini from uid webuser to www-data, nothing
+
+netstat -natup | grep LISTEN
+
+Needed to add user www-data to nginx.conf
+
+
+
+Reference:
+http://logch.blogspot.com/2017/02/django-uwsgi-nginx-setup-in-ubuntu-16.html
+https://www.youtube.com/watch?v=TYZfHn0MoXg
+
+
+
+=======================
