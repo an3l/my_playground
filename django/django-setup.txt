@@ -81,7 +81,67 @@ Migrate tables from INSTALLED_APPS (django.contrib.admin etc), change Time_zone 
   ```
   ./manage.py runserver
   ```
-// Old tutorial
+
+7) Migration => modification of your data in app.models.py
+  configuration => settings.py INSTALLED_APPS
+
+  '_flight_app.apps.FligthsAppConfig' see app/apps.py
+  ./manage.py makemigrations will automtaically generate migrations (create databse table or similar)
+  all changes made to database. Created 0001_initial.py file.
+  id added automtically
+  ```
+  ./manage.py makemigrations
+Migrations for '_fligths_app':
+  _fligths_app/migrations/0001_initial.py
+    - Create model Flight
+
+    class Migration(migrations.Migration):
+
+        initial = True
+
+        dependencies = [
+        ]
+
+        operations = [
+            migrations.CreateModel(
+                name='Flight',
+                fields=[
+                    ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                    ('origin', models.CharField(max_length=64)),
+                    ('destination', models.CharField(max_length=64)),
+                    ('duration', models.IntegerField()),
+                ],
+            ),
+        ]
+
+  ```
+* ./manage.py migrate
+* To see the list of commands use this:
+    ```
+    ./manage.py sqlmigrate _fligths_app 0001
+    BEGIN;
+    --
+    -- Create model Flight
+    --
+    CREATE TABLE "_fligths_app_flight" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "origin" varchar(64) NOT NULL, "destination" varchar(64) NOT NULL, "duration" integer NOT NULL);
+    COMMIT;
+
+    ```
+* settings.py
+  DATABASES dictionary {}
+
+8) ADD custom data
+* python manage.py shell
+    ```
+      >>> from _fligths_app.models import Flight
+      >>> f = Flight(origin="NY", destination="Sarajevo", duration=480)
+      >>> f.save()
+      >>> Flight.objects.all()
+      >>>  f=Flight.objects.first() # access flight f.origin
+      >>> f.delete()
+    ```
+
+================== Old tutorial =============
 Add app to settings.py
 	'polls.apps.PollsConfig'
 	python manage.py makemigrations polls
