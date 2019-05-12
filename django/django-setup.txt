@@ -171,6 +171,7 @@ Migrations for '_fligths_app':
         ./manage.py createsuperuser anel
 
 
+11) Redirecting reverse() and adding the name of routes
 ================== Old tutorial =============
 Add app to settings.py
 	'polls.apps.PollsConfig'
