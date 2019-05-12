@@ -165,6 +165,10 @@ Migrations for '_fligths_app':
   >>> a2.arrivals.all()
   <QuerySet [<Flight: from New York (NYC) to Sarajevo (SA)>]>
 
+10) Using admin interface app/admin.py =>
+    * register models we want to use
+    * create user (login into admin site)
+        ./manage.py createsuperuser anel
 
 
 ================== Old tutorial =============
