@@ -64,8 +64,9 @@ django
   django-admin startproject mysite
 	django-admin version
 ```
+  When running this parent a
 https://docs.djangoproject.com/en/1.11/ref/django-admin/
-5) Start django application
+5) Start django application (_flight_app)
 ```
 	python manage.py startapp polls
 ```
@@ -76,11 +77,11 @@ Migrate tables from INSTALLED_APPS (django.contrib.admin etc), change Time_zone 
 	sudo apt-get install sqlite3 libsqlite3-dev
 5.1) It is good to create a custom urls.py per application (see flight_app/urls.py)
 5.2) DJango looks project-fligths/urls.py not our specific one, so we have to link it.
-        ```
-        from django.urls import include, path
-        path("", include("fligth_app.urls")),
-        ```
-
+6) MInimal working Examples
+  ```
+  ./manage.py runserver
+  ```
+// Old tutorial
 Add app to settings.py
 	'polls.apps.PollsConfig'
 	python manage.py makemigrations polls
