@@ -184,7 +184,9 @@ Migrations for '_fligths_app':
     >>> p
     <Passenger: Anel Husakovic>
     >>> p.flights.all()
-
+14) Forms
+  csrf (403 error ) cross site request forgery
+  * note that HttpResponseRedirect(reverse(is accepting tuple is argument (coma is needed)))
 
 ================== Old tutorial =============
 Add app to settings.py
