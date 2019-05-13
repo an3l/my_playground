@@ -6,7 +6,7 @@ from django.http import HttpResponse, Http404
 def index(request):
     template_name="_flights_app/index.html"
     context={
-        "flights":Flight.objects.all()
+        "flights":Flight.objects.all(),
     } #context dictionary passes keys and values
     return render(request, template_name, context)
 
@@ -17,6 +17,7 @@ def flight(request, flight_id):
     except Flight.DoesNotExist:
         raise Http404("Flight doesn't exist!")
     context={
-        "flight":flight
+        "flight":flight,
+        "passengers":flight.passengers.all()
     }
     return render(request, "_flights_app/flight.html", context)

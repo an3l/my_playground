@@ -1,14 +1,21 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title> FLights </title>
-  </head>
-  <body>
-    <h1> Flights {{flight.id}} </h1>
-      <ul>
-        <li> Origin: {{flight.origin}}</li>
-        <li> Destination: {{flight.destination}}</li>
-      </ul>
-      <a href="{% url 'index' %}"> Back to full flight listing</a>
-  </body>
-</html>
+{% extends "_flights_app/base.html" %}
+{% block title%}
+  Flight {{flight.id}}
+{%endblock%}
+
+{% block body%}
+  <h1> Flights {{flight.id}} </h1>
+    <ul>
+      <li> Origin: {{flight.origin}}</li>
+      <li> Destination: {{flight.destination}}</li>
+    </ul>
+    <h2> Passengers</h2>
+    <ul>
+      {% for passenger in passengers %}
+        <li> {{ passenger }}</li>
+      {% empty %}
+        <li> No passengers.</li>
+      {% endfor %}
+    </ul>
+    <a href="{% url 'index' %}"> Back to full flight listing</a>
+{%endblock%}

@@ -172,6 +172,20 @@ Migrations for '_fligths_app':
 
 
 11) Redirecting reverse() and adding the name of routes
+12) Template inheritance (Django Template Language DTL not Jinja2)
+13) ManyToManyField
+    * ./manage.py sqlmigrate _fligths_app 0003
+    * Create custom user in shell
+    >>> from _fligths_app.models import Flight, Airport, Passenger
+    >>> f=Flight.objects.get(pk=1)
+    >>>Passenger(first='Anel', last='Husakovic')
+    >>> p.save()
+    >>> p.flights.add(f)
+    >>> p
+    <Passenger: Anel Husakovic>
+    >>> p.flights.all()
+
+
 ================== Old tutorial =============
 Add app to settings.py
 	'polls.apps.PollsConfig'
