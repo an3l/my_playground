@@ -187,7 +187,26 @@ Migrations for '_fligths_app':
 14) Forms
   csrf (403 error ) cross site request forgery
   * note that HttpResponseRedirect(reverse(is accepting tuple is argument (coma is needed)))
+15) Login and authentication system
+  * authentication and authorization app
+        groups and users classes are visible in admin.site
+  django.contrib.auth import authenticate, login, logout
+  if not request.user.is_authenticated => display login.html page
+  else user=request.user => render user.html with context
 
+  def login_view(request):
+    username=request.POST["username"] same pass
+    user =authenticate(request, username=username, pasword=pass) # built in
+    if user is not None:
+      login(request, user) #built in function
+  def logout_view(request):
+    logout(request) #built in no need for session
+    return render(request, "users/login.html", {"message","Logout"})
+    user is a model built in with user.name, etc
+    from django.contrib.auth.models import user
+    user=User.objects.create_user("name", "mail","pass")
+    user.save()
+session: django.contrib.sessions (settings.py)
 ================== Old tutorial =============
 Add app to settings.py
 	'polls.apps.PollsConfig'
