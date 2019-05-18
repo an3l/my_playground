@@ -207,6 +207,14 @@ Migrations for '_fligths_app':
     user=User.objects.create_user("name", "mail","pass")
     user.save()
 session: django.contrib.sessions (settings.py)
+
+16) rm -rf .git uninitialize git
+    Using `sqlite db browser GUI` nice
+    Using LOGIN_REDIRECT_URL='home/' -> implied from django.contrib.url.views import login (built in variable when login)
+
+17) django.db.models.signals import signal
+    Using pass from view
+    https://docs.djangoproject.com/en/2.2/ref/signals/
 ================== Old tutorial =============
 Add app to settings.py
 	'polls.apps.PollsConfig'
