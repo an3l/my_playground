@@ -1,0 +1,38 @@
+makefile variables $() or ${} single char variable doesn't need parentheses 
+	$@ (target filename),
+	$* (target filename without file extension)
+	$< (first prerequisites filename)
+	$^(filenames of all pre-requisites, separeted by spaces, discarded duplicates)
+
+Virtual Path - VPATH & vpath
+You can use VPATH (uppercase) to specify the directory to search for dependencies and target files. 
+# Search for dependencies and targets from "src" and "include" directories
+# The directories are separated by space
+VPATH = src include
+
+# Search for .c files in "src" directory; .h files in "include" directory
+# The pattern matching character '%' matches filename without the extension
+vpath %.c src
+vpath %.h include
+
+Implicit pattern rules
+
+make --print-data-base
+
+
+//Readline
+new object types, all pointers to functions.
+Instead int (*func)(int, int); write 
+rl_command_func_t *func;
+
+int foo (int count, int key)
+
+
+Link
+Gcc manual:
+http://gcc.gnu.org/onlinedocs/
+Gnu make:
+http://www.gnu.org/software/make/manual/make.html
+Other:
+https://www.ntu.edu.sg/home/ehchua/programming/cpp/gcc_make.html
+https://eli.thegreenplace.net/2016/basics-of-using-the-readline-library/
