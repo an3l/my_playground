@@ -45,117 +45,26 @@
         <thead>
           <tr>
             <th  class="table-info" scope="col">Razredi</th>
-            {% for predmet in r5.predmeti.all %}
-            <th  class="table-info" scope="col">{{ predmet.naziv}}</th>
+            {% for diploma in diplome|slice:":1" %}
+              {% for predmet in diploma.predmeti.all %}
+              <th  class="table-info" scope="col">{{ predmet.naziv}}</th>
+              {% endfor %}
             {% endfor %}
           </tr>
         </thead>
         <tbody>
 
-
+        {% for diploma in diplome%}
         <tr>
-          <td>{{r5.razred_naziv}}</td>
-          {% for predmet in r5.predmeti.all %}
+          <td>{{diploma.razred_naziv}}</td>
+          {% for predmet in diploma.predmeti.all %}
           <td> <input type="number" min=2 max=5 name="razred5" value="{{predmet.ocjena}}"> </td>
           {% endfor %}
         </tr>
+        {% endfor %}
         </tbody>
       </table>
       </div>
-
-       <!-- Tabela 6. razreda -->
-       <div class="table-responsive">
-       <table class="table table-sm table-hover table-bordered">
-         <thead>
-           <tr>
-             <th  class="table-info" scope="col">Razredi</th>
-             {% for predmet in r6.predmeti.all %}
-             <th  class="table-info" scope="col">{{ predmet.naziv}}</th>
-             {% endfor %}
-           </tr>
-         </thead>
-         <tbody>
-
-
-         <tr>
-           <td>{{r6.razred_naziv}}</td>
-           {% for predmet in r6.predmeti.all %}
-           <td> <input type="number" min=2 max=5 name="razred5" value="{{predmet.ocjena}}"> </td>
-            {% endfor %}
-         </tr>
-         </tbody>
-       </table>
-       </div>
-       <!-- Tabela 7. razreda -->
-       <div class="table-responsive">
-       <table class="table table-sm table-hover table-bordered">
-         <thead>
-           <tr>
-             <th  class="table-info" scope="col">Razredi</th>
-             {% for predmet in r7.predmeti.all %}
-             <th  class="table-info" scope="col">{{ predmet.naziv}}</th>
-             {% endfor %}
-           </tr>
-         </thead>
-         <tbody>
-
-
-         <tr>
-           <td>{{r7.razred_naziv}}</td>
-           {% for predmet in r7.predmeti.all %}
-           <td> <input type="number" min=2 max=5 name="razred5" value="{{predmet.ocjena}}"> </td>
-           {% endfor %}
-         </tr>
-
-         </tbody>
-       </table>
-       </div>
-       <!-- Tabela 8. razreda -->
-       <div class="table-responsive">
-       <table class="table table-sm table-hover table-bordered">
-         <thead>
-           <tr>
-             <th  class="table-info" scope="col">Razredi</th>
-             {% for predmet in r8.predmeti.all %}
-             <th  class="table-info" scope="col">{{ predmet.naziv}}</th>
-             {% endfor %}
-           </tr>
-         </thead>
-         <tbody>
-
-
-         <tr>
-           <td>{{r8.razred_naziv}}</td>
-           {% for predmet in r8.predmeti.all %}
-           <td> <input type="number" min=2 max=5 name="razred5" value="{{predmet.ocjena}}"> </td>
-            {% endfor %}
-         </tr>
-
-
-         </tbody>
-       </table>
-       </div>
-       <!-- Tabela 9. razreda -->
-       <div class="table-responsive">
-       <table class="table table-sm table-hover table-bordered">
-         <thead>
-           <tr>
-             <th  class="table-info" scope="col">Razredi</th>
-             {% for predmet in r9.predmeti.all %}
-             <th  class="table-info" scope="col">{{ predmet.naziv}}</th>
-             {% endfor %}
-           </tr>
-         </thead>
-         <tbody>
-
-
-         <tr>
-           <td>{{r9.razred_naziv}}</td>
-           {% for predmet in r9.predmeti.all %}
-           <td> <input type="number" min=2 max=5 name="razred5" value="{{predmet.ocjena}}"> </td>
-           {% endfor %}
-         </tr>
-
 
          </tbody>
        </table>

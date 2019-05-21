@@ -156,11 +156,7 @@ def details(request, ucenik_id):
 
         context={
         'ucenik':Ucenik.objects.get(id=ucenik_id),
-        'r5':razred5,
-        'r6':razred6,
-        'r7':razred7,
-        'r8':razred8,
-        'r9':razred9,
+        'diplome':diplome,
         'smjerovi':Smjer.objects.all(),
         }
         #if request.user.is_authenticated:
