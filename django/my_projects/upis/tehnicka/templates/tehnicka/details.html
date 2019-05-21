@@ -5,71 +5,69 @@
 {% endblock %}
 
 {% block body %}
-  <h4>  Edit {{ucenik.ime}} {{uceni.prezime}} </h4>
-  <h4> {{ucenik.prezime}}</h4>
+  <h4>  Edit {{ucenik.ime}} {{ucenik.prezime}} </h4>
 
   <div class="table-responsive">
-    <form action="{% url 'tehnicka:dodajucenika' %}" method='POST'>
+    <form action="{%url 'tehnicka:details' ucenik.id%}" method='POST'>
       {% csrf_token %}
-      <table class="table table-sm table-hover table-bordered">
-        <thead>
-          <tr>
-            <th  class="table-info" scope="col">#</th>
-            <th  class="table-info" scope="col">Ime</th>
-            <th  class="table-info" scope="col">Prezime</th>
-            <th  class="table-info" scope="col">JMBG</th>
-            <th  class="table-info" scope="col">Smjer</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row">1</th>
-            <td> <input type="text" name="ime" value="{{ucenik.ime}}"> </td>
-            <td> <input type="text" name="prezime" value="{{ucenik.prezime}}"></td>
-            <td> <input type="text" name="jmbg" value="{{ucenik.JMBG}}"></td>
-            <td>
-              <select class="" name="smjer">
-                {% for smjer in smjerovi %}
-                  <option value="{{smjer.id}}"> {{smjer.naziv}}</option>
-                {% endfor%}
-              </select>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table table-sm table-hover table-bordered">
+          <thead>
+            <tr>
+              <th  class="table-info" scope="col">#</th>
+              <th  class="table-info" scope="col">Ime</th>
+              <th  class="table-info" scope="col">Prezime</th>
+              <th  class="table-info" scope="col">JMBG</th>
+              <th  class="table-info" scope="col">Smjer</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">1</th>
+              <td> <input type="text" name="ime" value="{{ucenik.ime}}"> </td>
+              <td> <input type="text" name="prezime" value="{{ucenik.prezime}}"></td>
+              <td> <input type="text" name="jmbg" value="{{ucenik.JMBG}}"></td>
+              <td>
+                <select class="" name="smjer">
+                  {% for smjer in smjerovi %}
+                    <option value="{{smjer.id}}"> {{smjer.naziv}}</option>
+                  {% endfor%}
+                </select>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
-     <!-- Tabela 5. razreda -->
+     <!-- Tabela svih razreda -->
       <div class="table-responsive">
-      <table class="table table-sm table-hover table-bordered">
-        <thead>
-          <tr>
-            <th  class="table-info" scope="col">Razredi</th>
-            {% for diploma in diplome|slice:":1" %}
-              {% for predmet in diploma.predmeti.all %}
-              <th  class="table-info" scope="col">{{ predmet.naziv}}</th>
+        <table class="table table-sm table-hover table-bordered">
+          <thead>
+            <tr>
+              <th  class="table-info" scope="col">Razredi</th>
+              {% for diploma in diplome|slice:":1" %}
+                {% for predmet in diploma.predmeti.all %}
+                <th  class="table-info" scope="col">{{ predmet.naziv}}</th>
+                {% endfor %}
               {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+
+          {% for diploma in diplome%}
+          <tr>
+            <td>{{diploma.razred_naziv}}</td>
+            {% for predmet in diploma.predmeti.all %}
+            <td> <input type="number" min=2 max=5 name="razredi_ocjene" value="{{predmet.ocjena}}"> </td>
             {% endfor %}
           </tr>
-        </thead>
-        <tbody>
-
-        {% for diploma in diplome%}
-        <tr>
-          <td>{{diploma.razred_naziv}}</td>
-          {% for predmet in diploma.predmeti.all %}
-          <td> <input type="number" min=2 max=5 name="razred5" value="{{predmet.ocjena}}"> </td>
           {% endfor %}
-        </tr>
-        {% endfor %}
-        </tbody>
-      </table>
+          </tbody>
+        </table>
       </div>
 
-         </tbody>
-       </table>
-       </div>
       <button type="submit" class="btn btn-secondary btn-lg"> Spasi promjene <i class="fa fa-user-plus"></i></button>
     </form>
+  </div>
 
 {% endblock %}

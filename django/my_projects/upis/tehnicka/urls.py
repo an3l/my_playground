@@ -8,6 +8,6 @@ app_name = 'tehnicka'
 urlpatterns = [
     path("", views.index, name='index'),
     path("details/<int:ucenik_id>", views.details, name='details'),
-    #path("edit/<int:ucenik_id>", views.editucenika, name='editucenik'),
+    path("delete/<int:ucenik_id>", views.delete, name='delete'),
     path("add-student/", views.dodajucenika, name='dodajucenika')
 ]

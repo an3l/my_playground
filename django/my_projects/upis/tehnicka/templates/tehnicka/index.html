@@ -5,6 +5,9 @@
 {% endblock %}
 
 {% block body %}
+  {% if message %}
+    {{ message }}
+  {% endif %}
     <div class="table-responsive" style="float: right; width: 50%">
       <form action="{% url 'tehnicka:dodajucenika' %}" method='GET'>
           {% csrf_token %}
@@ -36,7 +39,7 @@
             <td>{{ ucenik.JMBG }}</td>
             <td>{{ ucenik.smjer.naziv }}</td>
             <td> <a href="{% url 'tehnicka:details' ucenik.id %}"> <span> Uredi </span><i class="fa fa-user"></i> </a> </td>
-            <td> <a href="{% url 'tehnicka:details' ucenik.id %}"> <span> Izbriši </span><i class="fa fa-user"></i> </a> </td>
+            <td> <a href="{% url 'tehnicka:delete' ucenik.id %}"> <span> Izbriši </span><i class="fa fa-user"></i> </a> </td>
           </tr>
           {% endfor%}
         </tbody>

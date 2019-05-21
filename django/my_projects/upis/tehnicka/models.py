@@ -35,11 +35,16 @@ class Diploma(models.Model):
     def __str__(self):
         return f"{self.razred_naziv}"
 
+class Priznanja(models.Model):
+    naziv=models.CharField(max_length=64)
+    ucenik_id=models.IntegerField()
+
 class Ucenik(models.Model):
     ime=models.CharField(max_length=50)
     prezime=models.CharField(max_length=50)
     JMBG=models.IntegerField(null=True, blank=False)
     smjer=models.ForeignKey(Smjer, on_delete=models.CASCADE)
+    priznanje_id=models.ForeignKey(Priznanja, on_delete=models.CASCADE, blank=True, null=True)
     # Ukoliko ne bismo trazili listanje po smjerovima
     #smjer=model.CharField(max_length=3,choices=smjerovi, default=automaticar)
     # opcionalno bi trebalo napraviti izbor za 3 smjera (manytomany)

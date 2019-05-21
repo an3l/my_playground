@@ -7,11 +7,10 @@
     <li><a href="{% url 'logout' %}">Logout</a></li>
 </ul>
 <hr>
-{%comment%}
-<li><a href="{% url 'ucenici' %}">Lista ucenika</a></li>
-{%endcomment%}
-{%comment%}
-<li><a href="{% url 'ucenici' %}"><span class="glyphicon glyphicon-plus"></span>Dodaj ucenika</a></li>
-<li><a href="{% url 'tehnicka:index' %}"><span class="glyphicon glyphicon-plus"></span>Svi ucenici</a></li>
-{%endcomment%}
+
+<li><a href="{% url 'tehnicka:index' %}">Lista ucenika</a></li>
+
+
+<li><a href="{% url 'tehnicka:dodajucenika' %}"><span class="glyphicon glyphicon-plus"></span>Dodaj ucenika</a></li>
+
 {% endblock %}

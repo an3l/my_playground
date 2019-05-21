@@ -6,17 +6,25 @@ from django.contrib.auth import authenticate, login, logout
 
 from tehnicka.forms import UcenikEditForm
 from django.urls import reverse
+
+#### ---------------- INDEX VIEW  ---------------- ####
 # INDEX: This view should show all students with corresponding classes and grades
 def index(request):
+    message=''
+    if request.session.get('message'):
+        message='Deleted user'
+        del request.session['message']
     context={
     'ucenici':Ucenik.objects.all(),
-    'smjerovi':Smjer.objects.all()
+    'smjerovi':Smjer.objects.all(),
+    'message':message
     }
     if request.user.is_authenticated:
         return render(request, 'tehnicka/index.html',context)
     else:
         return render(request, "users/login.html", {"message": "Please log in."})
 
+#### ---------------- ADD VIEW  ---------------- ####
 # ADD STUDENT: This view should add new student (optional with data from form
 def dodajucenika(request):
         if request.method == "POST":
@@ -41,11 +49,10 @@ def dodajucenika(request):
                 # mozemo unijeti ucenika
                 ucenik= Ucenik(ime=ime, prezime=prezime, smjer=smjer,JMBG=jmbg)
                 ucenik.save()
-                if Ucenik.objects.count()!=0:
-                    ucenik_id= Ucenik.objects.latest('id').id
-                else:
+                if Ucenik.objects.count()==0:
                     ucenik_id=1
 
+                ucenik_id= Ucenik.objects.latest('id').id
                 # Pod pretpostavkom da smo validno unijeli sve ocjene za sve predmete
                 # mozemo ispuniti diplomu
                 razred5=Diploma(razred_id=5, razred_naziv="Peti razred") # razred.razred_id = 5 (Diploma)
@@ -132,28 +139,34 @@ def dodajucenika(request):
             }
             return render(request, 'tehnicka/dodajucenika.html', context)
 
-
+#### ---------------- EDIT/DETAILS VIEW  ---------------- ####
 def details(request, ucenik_id):
     if request.method == "POST":
-        form = UcenikEditForm(request.POST, instance=Ucenik.objects.get(id=ucenik_id))
-        if form.is_valid():
-            form.save()
-            context={
-            'ucenik':Ucenik.objects.get(id=ucenik_id),
-            #'smjer':Ucenik.objects.get(id=ucenik_id).smjer., #Ucenik.smjer.get_queryset()
-            #'predmeti': Ocjena.predmet_id.get_queryset(),
-            #'ocjene':Ocjena.objects.filter(ucenik_id=Ucenik.objects.get(id=ucenik_id)),
-            'message':'Niste unijeli podatke. Unesite ponovo.',
-            }
-            return render(request, 'tehnicka/details.html',context)
+        try:
+            ime=request.POST["ime"]
+            prezime=(request.POST["prezime"])
+            smjer_id=(request.POST["smjer"])
+            smjer=Smjer.objects.get(id=smjer_id)
+            razredi_ocjene=request.POST.getlist('razredi_ocjene')
+            #return HttpResponse(razredi_ocjene)
+            ucenik=Ucenik.objects.get(id=ucenik_id)
+            diplome_qs=Diploma.objects.filter(ucenik_id=ucenik_id) # query_set -> not working
+            diplome_list=list(diplome_qs) #list -> not working
+            i=0
+            for razred in diplome_qs: # or diplome_qs not working
+                predmeti_list= (razred.predmeti.all()) # predmeti is a list -> not working, also query_set
+                for predmet in predmeti_list: #Predmet query_set
+                    predmet.ocjena=razredi_ocjene[i]
+                    i=i+1
+                    predmet.save()
+                razred.save()
+
+            return HttpResponseRedirect(reverse('tehnicka:index'))
+        except KeyError:
+            return HttpResponse("Key error - post uredi")
+
     else:
         diplome=Diploma.objects.filter(ucenik_id=ucenik_id);
-        razred5=diplome[0]
-        razred6=diplome[1]
-        razred7=diplome[2]
-        razred8=diplome[3]
-        razred9=diplome[4]
-
         context={
         'ucenik':Ucenik.objects.get(id=ucenik_id),
         'diplome':diplome,
@@ -164,34 +177,8 @@ def details(request, ucenik_id):
         #else:
         #    return render(request, "users/login.html", {"message": "Please log in."})
 
-'''
-def editucenika(request, ucenik_id):
-    if request.method == "POST":
-        form = UcenikEditForm(request.POST, instance=request.Ucenik)
-        name=request.POST.copy().get('ime')
-        #return HttpResponse(name)
-        if form.is_valid():
-            form.save()
-            context={
-            'ucenik':Ucenik.objects.get(id=ucenik_id),
-            #'smjer':Ucenik.objects.get(id=ucenik_id).smjer., #Ucenik.smjer.get_queryset()
-            #'predmeti': Ocjena.predmet_id.get_queryset(),
-            #'ocjene':Ocjena.objects.filter(ucenik_id=Ucenik.objects.get(id=ucenik_id)),
-            #'message':'Ucenik editovan',
-            }
-            #if request.user.is_authenticated:
-            return HttpResponse("Uasdfas")
-            #return render(request, 'tehnicka/details.html',context)
-        else:
-            messages.error(request, form.errors)
-            # return form with entered data, display messages at the top
-    else:
-        #return HttpResponse("get")
-        form = UcenikEditForm(instance=Ucenik.objects.get(id=ucenik_id))
-        context={
-        'form':form,
-        'ucenik_id':ucenik_id
-        }
-        return render(request, 'tehnicka/editucenika2.html', context)
-
-        '''
+#### ---------------- DELETE VIEW  ---------------- ####
+def delete(request, ucenik_id):
+    ucenik=Ucenik.objects.filter(id=ucenik_id).delete()
+    request.session['message']="Deleted user"
+    return HttpResponseRedirect(reverse('tehnicka:index'))
