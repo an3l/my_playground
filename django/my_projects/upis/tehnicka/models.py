@@ -8,43 +8,14 @@ class Smjer(models.Model):
     class Meta:
         verbose_name_plural = "smjerovi"
     def __str__(self):
-        return f"{self.kod}-{self.naziv}"
+        return f"id:{self.id}:{self.kod}-{self.naziv}"
 
-class Predmet(models.Model):
-    kod=models.CharField(max_length=2, default='MM', blank=False)
-    naziv=models.CharField(max_length=64)
-    ocjena=models.IntegerField(null=True, blank=True)
-    class Meta:
-        verbose_name = 'Predmet'
-        verbose_name_plural = 'Predmeti'
-    def __str__(self):
-        return f"{self.kod}-{self.naziv}"
-
-    def save(self, *args, **kwargs):
-     if not self.ocjena:
-          self.ocjena = None
-     super(Predmet, self).save(*args, **kwargs)
-
-class Diploma(models.Model):
-    razred_id=models.IntegerField(null=False, blank=False)
-    razred_naziv=models.CharField(max_length=64)
-    predmeti=models.ManyToManyField(Predmet)
-    ucenik_id=models.IntegerField(default='0',blank=False)
-    class Meta:
-        verbose_name_plural = "Diplome"
-    def __str__(self):
-        return f"{self.razred_naziv}"
-
-class Priznanja(models.Model):
-    naziv=models.CharField(max_length=64)
-    ucenik_id=models.IntegerField()
 
 class Ucenik(models.Model):
     ime=models.CharField(max_length=50)
     prezime=models.CharField(max_length=50)
     JMBG=models.IntegerField(null=True, blank=False)
     smjer=models.ForeignKey(Smjer, on_delete=models.CASCADE)
-    priznanje_id=models.ForeignKey(Priznanja, on_delete=models.CASCADE, blank=True, null=True)
     # Ukoliko ne bismo trazili listanje po smjerovima
     #smjer=model.CharField(max_length=3,choices=smjerovi, default=automaticar)
     # opcionalno bi trebalo napraviti izbor za 3 smjera (manytomany)
@@ -68,4 +39,41 @@ class Ucenik(models.Model):
     class Meta:
         verbose_name_plural = "Učenici"
     def __str__(self):
-        return f"{self.ime}-{self.prezime}"
+        return f"id:{self.id}:{self.ime}-{self.prezime}"
+
+class Priznanja(models.Model):
+    naziv=models.CharField(max_length=64)
+    bodovi=models.IntegerField(default='0')
+    ucenik_id=models.ForeignKey(Ucenik, on_delete=models.CASCADE)
+    def __str__(self):
+        return f"id:{self.id}:{self.naziv}-{self.bodovi}"
+
+class PredmetIspis(models.Model):
+    kod=models.CharField(max_length=2, default='MM', blank=False)
+    naziv=models.CharField(max_length=64)
+
+class Predmet(models.Model):
+    kod=models.CharField(max_length=2, default='MM', blank=False)
+    naziv=models.CharField(max_length=64)
+    ocjena=models.IntegerField(null=True, blank=True)
+    # diploma_id=models.ForeignKey(Diploma,on_delete=models.CASCADE) not defined
+    class Meta:
+        verbose_name = 'Predmet'
+        verbose_name_plural = 'Predmeti'
+    def __str__(self):
+        return f"id:{self.id} {self.kod}-{self.naziv}"
+'''
+    def save(self, *args, **kwargs):
+     if not self.ocjena:
+          self.ocjena = None
+     super(Predmet, self).save(*args, **kwargs)
+'''
+class Diploma(models.Model):
+    razred_id=models.IntegerField(null=False, blank=False)
+    razred_naziv=models.CharField(max_length=64)
+    predmeti=models.ManyToManyField(Predmet)
+    ucenik_id=models.ForeignKey(Ucenik, on_delete=models.CASCADE)
+    class Meta:
+        verbose_name_plural = "Diplome"
+    def __str__(self):
+        return f"id:{self.id} {self.razred_naziv}"
