@@ -1,0 +1,46 @@
+{% extends "tehnicka/base.html" %}
+
+{% block title%}
+  Home
+{% endblock %}
+
+{% block body %}
+    <div class="table-responsive" style="float: right; width: 50%">
+      <form action="{% url 'tehnicka:dodajucenika' %}" method='GET'>
+          {% csrf_token %}
+          <button type="submit" class="btn btn-secondary btn-lg">Dodaj ucenika <i class="fa fa-user-plus"></i></button>
+      </form>
+    </div>
+
+    <br>
+    <br>
+    <hr>
+
+    <div class="table-responsive">
+      <table class="table table-sm table-hover table-bordered">
+        <thead>
+          <tr>
+            <th  class="table-info" scope="col">#</th>
+            <th  class="table-info" scope="col">Ime</th>
+            <th  class="table-info" scope="col">Prezime</th>
+            <th  class="table-info" scope="col">JMBG</th>
+            <th  class="table-info" scope="col" colspan="3">Smjer</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ucenik in ucenici %}
+          <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td>{{ ucenik.ime }}</td>
+            <td>{{ ucenik.prezime }}</td>
+            <td>{{ ucenik.JMBG }}</td>
+            <td>{{ ucenik.smjer.naziv }}</td>
+            <td> <a href="{% url 'tehnicka:details' ucenik.id %}"> <span> Uredi </span><i class="fa fa-user"></i> </a> </td>
+            <td> <a href="{% url 'tehnicka:details' ucenik.id %}"> <span> Izbriši </span><i class="fa fa-user"></i> </a> </td>
+          </tr>
+          {% endfor%}
+        </tbody>
+      </table>
+    </div>
+
+{% endblock %}

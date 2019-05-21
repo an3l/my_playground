@@ -1,0 +1,17 @@
+{% extends "users/base.html" %}
+
+{% block body %}
+<h1>Zdravo {{ user.first_name }}</h1>
+<ul>
+    <li>Trenutno logovan kao: {{ user.username }}</li>
+    <li><a href="{% url 'logout' %}">Logout</a></li>
+</ul>
+<hr>
+{%comment%}
+<li><a href="{% url 'ucenici' %}">Lista ucenika</a></li>
+{%endcomment%}
+{%comment%}
+<li><a href="{% url 'ucenici' %}"><span class="glyphicon glyphicon-plus"></span>Dodaj ucenika</a></li>
+<li><a href="{% url 'tehnicka:index' %}"><span class="glyphicon glyphicon-plus"></span>Svi ucenici</a></li>
+{%endcomment%}
+{% endblock %}

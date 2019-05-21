@@ -1,0 +1,30 @@
+{% extends "tehnicka/base.html" %}
+
+{% block body %}
+  {% if message %}
+    <div class="">
+      {{message}}
+    </div>
+  {%endif%}
+
+    <form method="POST" class="post-form" action="{%url 'tehnicka:details' ucenik_id%}">
+        {% csrf_token %}
+        {{form.as_p}}
+        {% comment %}
+          looping over forms fields
+          https://docs.djangoproject.com/en/dev/topics/forms/#looping-over-the-form-s-fields
+
+          {% for field in form %}
+            <div class="fieldWrapper">
+                {{ field.ime }}
+                {{ field.prezime }} {{ field }}
+            </div>
+          {% endfor %}
+       {% endcomment %}
+        {# {{form.instance}}  #}
+        <button type="submit" class="save btn btn-default">Spasi ucenika</button>
+        <br>
+        <a href="{% url 'tehnicka:index' %}"> Vrati se na sve ucenike </a>
+    </form>
+
+{% endblock %}
