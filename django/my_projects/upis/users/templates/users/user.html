@@ -1,16 +1,25 @@
 {% extends "users/base.html" %}
-
+{% block title %}
+  Zdravo {{ user.username}}
+{% endblock %}
 {% block body %}
-<h1>Zdravo {{ user.first_name }}</h1>
-<ul>
-    <li>Trenutno logovan kao: {{ user.username }}</li>
-    <li><a href="{% url 'logout' %}">Logout</a></li>
-</ul>
-<hr>
+<div class="container">
 
-<li><a href="{% url 'tehnicka:index' %}">Lista ucenika</a></li>
+  <div class="jumbotron">
+    <h1> Upis učenika u prvi razred</h1>
+    <h3> Tehnička škola Zenica </h3>
+  </div>
+  <div class="continaer">
+      <h1>Zdravo {{ user.username }}</h1>
 
+    <p class="help-block">
+      Pristupite unosu novog ucenika.
+    </p>
+  </div>
+  <hr>
 
-<li><a href="{% url 'tehnicka:dodajucenika' %}"><span class="glyphicon glyphicon-plus"></span>Dodaj ucenika</a></li>
-
+<!--
+  <li><a href="{% url 'tehnicka:index' %}">Lista ucenika</a></li>
+  <li><a href="{% url 'tehnicka:dodajucenika' %}"><span class="glyphicon glyphicon-plus"></span>Dodaj ucenika</a></li> -->
+</div>
 {% endblock %}
