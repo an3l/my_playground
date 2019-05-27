@@ -1,14 +1,14 @@
 from django.shortcuts import render
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 
-from tehnicka.models import Ucenik, Smjer, Predmet, Diploma, PredmetIspis
+from tehnicka.models import Ucenik, Smjer, Predmet, Diploma, PredmetIspis, Priznanja
 from django.contrib.auth import authenticate, login, logout
 
 from tehnicka.forms import UcenikEditForm
 from django.urls import reverse
 
 from django.db import transaction
-
+import json
 #### ---------------- INDEX VIEW  ---------------- ####
 # INDEX: This view should show all students with corresponding classes and grades
 def index(request):
@@ -21,6 +21,47 @@ def index(request):
     'smjerovi':Smjer.objects.all(),
     'message':message
     }
+    s=0
+    bodovi={}
+    pbodovi={}
+    posebni_bodovi=0
+    for ucenik in Ucenik.objects.all():
+        for razred in Diploma.objects.filter(ucenik_id=ucenik):
+            for predmet in razred.predmeti.all():
+                # Handling posebni_bodovi na predmete automatika/arhitekture/energetike
+                if(ucenik.smjer.kod == 'AUT' or ucenik.smjer.kod == 'ARH' or ucenik.smjer.kod == 'EN'):
+                    if razred.razred_id==8 or razred.razred_id==9:
+                        if predmet.kod=='MM' or predmet.kod=='FI':
+                            posebni_bodovi=posebni_bodovi+predmet.ocjena
+                            pbodovi[ucenik.id]={predmet.kod:posebni_bodovi}
+                    if razred.razred_id==6 or razred.razred_id==7:
+                        if predmet.kod=='IN':
+                            posebni_bodovi=posebni_bodovi+predmet.ocjena
+
+                # Handling posebni_bodovi na predmete masinci/metalurzi
+                if(ucenik.smjer.kod == 'MAS' or ucenik.smjer.kod == 'ME'):
+                    if razred.razred_id==8 or razred.razred_id==9:
+                        if predmet.kod=='MM' or predmet.kod=='FI':
+                            posebni_bodovi=posebni_bodovi+predmet.ocjena
+                    if razred.razred_id==6 or razred.razred_id==7:
+                        if predmet.kod=='TK':
+                            posebni_bodovi=posebni_bodovi+predmet.ocjena
+
+                # Handling posebni_bodovi na predmete tehnicar drumskog saobracaja
+                if(ucenik.smjer.kod == 'TDS'):
+                    if razred.razred_id==8 or razred.razred_id==9:
+                        if predmet.kod=='MM' or predmet.kod=='FI':
+                            posebni_bodovi=posebni_bodovi+predmet.ocjena
+                    if razred.razred_id==6 or razred.razred_id==7:
+                        if predmet.kod=='GE':
+                            posebni_bodovi=posebni_bodovi+predmet.ocjena
+                s=s+predmet.ocjena
+        bodovi[ucenik.id]=s+posebni_bodovi
+        s=0
+        posebni_bodovi=0
+    #return HttpResponse(json.dumps( bodovi ))
+    #s5= # suma svih ocjena 5. razreda
+    #bodovi=s5+s6+s7+s8+s9+specificni_predmeti+posebna_priznanja
     if request.user.is_authenticated:
         return render(request, 'tehnicka/index.html',context)
     else:
@@ -40,6 +81,9 @@ def dodajucenika(request):
                 razred7_per_predmet=request.POST.getlist('razred7')
                 razred8_per_predmet=request.POST.getlist('razred8')
                 razred9_per_predmet=request.POST.getlist('razred9')
+
+                priznanja_naziv=request.POST.getlist('priznanje_naziv');
+                priznanje_bodovi=request.POST.getlist('priznanje_bodovi');
                 # Handle empty IntegerField
                 try:
                    jmbg=int(request.POST["jmbg"])
@@ -52,6 +96,15 @@ def dodajucenika(request):
                     # mozemo unijeti ucenika
                     ucenik= Ucenik(ime=ime, prezime=prezime, smjer=smjer,JMBG=jmbg)
                     ucenik.save()
+
+                    if priznanje_bodovi:
+                        for i in range(len(priznanje_bodovi)):
+                            naziv=priznanja_naziv[i]
+                            bodovi=priznanje_bodovi[i]
+                            priznanje=Priznanja(naziv=naziv, bodovi=bodovi, ucenik_id=ucenik)
+                            priznanje.save()
+
+
                     if Ucenik.objects.count()==0:
                         ucenik_id=1
 
@@ -83,7 +136,7 @@ def dodajucenika(request):
                     lista_predmeta_7 = Predmet.objects.bulk_create([Predmet(kod=key, naziv=d[key]) for key in d]) # already list
                     lista_predmeta_8 = Predmet.objects.bulk_create([Predmet(kod=key, naziv=d[key]) for key in d]) # already list
                     lista_predmeta_9 = Predmet.objects.bulk_create([Predmet(kod=key, naziv=d[key]) for key in d]) # already list
-    
+
                     for predmet in lista_predmeta_5:
                         predmet.save()
 
@@ -180,6 +233,10 @@ def details(request, ucenik_id):
             smjer_id=(request.POST["smjer"])
             smjer=Smjer.objects.get(id=smjer_id)
             razredi_ocjene=request.POST.getlist('razredi_ocjene')
+
+            priznanja_naziv=request.POST.getlist('priznanje_naziv')
+            priznanje_bodovi=request.POST.getlist('priznanje_bodovi')
+
             #return HttpResponse(razredi_ocjene)
             ucenik=Ucenik.objects.get(id=ucenik_id)
             diplome_qs=Diploma.objects.filter(ucenik_id=ucenik_id) # query_set -> not working
@@ -192,6 +249,31 @@ def details(request, ucenik_id):
                     i=i+1
                     predmet.save()
                 razred.save()
+            ucenik.ime=ime
+            ucenik.prezime=prezime
+            ucenik.smjer=smjer
+            ucenik.save()
+            i=0
+
+            if priznanja_naziv:
+                priznanje_ucenik=Priznanja.objects.filter(ucenik_id=ucenik)
+                if not priznanje_ucenik: # Nema priznanja ime dugme add i mozemo dodati nova
+                    for k in range(len(priznanje_bodovi)):
+                        naziv=priznanja_naziv[k]
+                        bodovi=priznanje_bodovi[k]
+                        priznanje=Priznanja(naziv=naziv, bodovi=bodovi, ucenik_id=ucenik)
+                        priznanje.save()
+
+                else: # ima priznanja samo mijenjamo
+                    i=0
+                    for priznanje in priznanje_ucenik:
+                        #for i in range(len(priznanje_bodovi)):
+                        naziv=priznanja_naziv[i]
+                        bodovi=priznanje_bodovi[i]
+                        priznanje.naziv=naziv
+                        priznanje.bodovi=bodovi
+                        priznanje.save()
+                        i=i+1
 
             return HttpResponseRedirect(reverse('tehnicka:index'))
         except KeyError:
@@ -204,6 +286,7 @@ def details(request, ucenik_id):
         'ucenik':ucenik,
         'diplome':diplome,
         'smjerovi':Smjer.objects.all(),
+        'priznanja':Priznanja.objects.filter(ucenik_id=ucenik)
         }
         #if request.user.is_authenticated:
         return render(request, 'tehnicka/details.html',context)
@@ -213,5 +296,18 @@ def details(request, ucenik_id):
 #### ---------------- DELETE VIEW  ---------------- ####
 def delete(request, ucenik_id):
     ucenik=Ucenik.objects.filter(id=ucenik_id).delete()
-    request.session['message']="Deleted user"
+    request.session['message']="Obrisan korisnik"
     return HttpResponseRedirect(reverse('tehnicka:index'))
+
+
+def brisipriznanje(request, priznanje_id):
+    if request.method == "GET":
+        try:
+            ucenik_id=Priznanja.objects.get(id=priznanje_id).ucenik_id.id
+            #return HttpResponseRedirect(reverse('tehnicka:details'), kwargs={'ucenik_id':ucenik_id})args=(p.id)
+            priznanje=Priznanja.objects.get(id=priznanje_id).delete()
+            request.session['message']="Obrisano priznanje"
+            return HttpResponseRedirect(reverse('tehnicka:details', args=(ucenik_id,)))
+
+        except KeyError:
+            return HttpResponse("Key error - post uredi priznanje")

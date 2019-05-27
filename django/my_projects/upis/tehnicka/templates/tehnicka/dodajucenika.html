@@ -4,67 +4,90 @@
 {% endblock %}
 
 {% block body %}
-
-<div class="table-responsive">
+<div class="container">
+  <h4 style="text-align:center">  Dodaj ucenika </h4>
+  <hr>
   <form action="{% url 'tehnicka:dodajucenika' %}" method='POST'>
-    {% csrf_token %}
-    <table class="table table-sm table-hover table-bordered">
-      <thead>
-        <tr>
-          <th  class="table-info" scope="col">#</th>
-          <th  class="table-info" scope="col">Ime</th>
-          <th  class="table-info" scope="col">Prezime</th>
-          <th  class="table-info" scope="col">JMBG</th>
-          <th  class="table-info" scope="col">Smjer</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th scope="row">1</th>
-          <td> <input type="text" name="ime" value=""> </td>
-          <td> <input type="text" name="prezime" value=""></td>
-          <td> <input type="text" name="jmbg" value=""></td>
-          <td>
-            <select class="" name="smjer">
-              {% for smjer in smjerovi %}
-                <option value="{{smjer.id}}"> {{smjer.naziv}}</option>
-              {% endfor%}
-            </select>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-responsive">
+      {% csrf_token %}
+      <table class="table table-sm table-hover table-bordered">
+        <thead>
+          <tr>
+            <th  class="table-info" scope="col">#</th>
+            <th  class="table-info" scope="col">Ime</th>
+            <th  class="table-info" scope="col">Prezime</th>
+            <th  class="table-info" scope="col">JMBG</th>
+            <th  class="table-info" scope="col">Smjer</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">1</th>
+            <td> <input type="text" name="ime" value=""> </td>
+            <td> <input type="text" name="prezime" value=""></td>
+            <td> <input type="text" name="jmbg" value=""></td>
+            <td>
+              <select class="" name="smjer">
+                {% for smjer in smjerovi %}
+                  <option value="{{smjer.id}}"> {{smjer.naziv}}</option>
+                {% endfor%}
+              </select>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
 
     <div class="table-responsive">
-    <table class="table table-sm table-hover table-bordered">
-      <thead>
-        <tr>
-          <th  class="table-info" scope="col">Predmeti</th>
-          <th  class="table-info" scope="col">Razred - 5</th>
-          <th  class="table-info" scope="col">Razred - 6</th>
-          <th  class="table-info" scope="col">Razred - 7</th>
-          <th  class="table-info" scope="col">Razred - 8</th>
-          <th  class="table-info" scope="col">Razred - 9</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for predmet in predmeti_header %}
-        <tr>
-          <td>{{predmet.naziv}}</td>
-          <td> <input type="number" min=2 max=5 name="razred5" value=""> </td>
-          <td> <input type="number" min=2 max=5 name="razred6" value=""></td>
-          <td> <input type="number" min=2 max=5  name="razred7" value=""></td>
-          <td> <input type="number" min=2 max=5  name="razred8" value=""></td>
-          <td> <input type="number" min=2 max=5  name="razred9" value=""></td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  <button type="submit" class="btn btn-secondary btn-lg">POTVRDI <i class="fa fa-user-plus"></i></button>
-</form>
-</div>
+      <table class="table table-sm table-hover table-bordered">
+          <thead>
+            <tr>
+              <th  class="table-info" scope="col">Predmeti</th>
+              <th  class="table-info" scope="col">Razred - 5</th>
+              <th  class="table-info" scope="col">Razred - 6</th>
+              <th  class="table-info" scope="col">Razred - 7</th>
+              <th  class="table-info" scope="col">Razred - 8</th>
+              <th  class="table-info" scope="col">Razred - 9</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for predmet in predmeti_header %}
+            <tr>
+              <td>{{predmet.naziv}}</td>
+              <td> <input type="number" min=2 max=5 name="razred5" value=""> </td>
+              <td> <input type="number" min=2 max=5 name="razred6" value=""></td>
+              <td> <input type="number" min=2 max=5  name="razred7" value=""></td>
+              <td> <input type="number" min=2 max=5  name="razred8" value=""></td>
+              <td> <input type="number" min=2 max=5  name="razred9" value=""></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
 
+      <div class="table-responsive">
+
+        <a href="#" id="priznanja_btn" class="btn btn btn-outline-secondary">Dodaj priznanje <i class="fa fa-certificate"></i></a>
+
+        <div class="table-responsive" id="table_div_priznanje">
+          <hr>
+          <table class="table table-sm table-hover table-bordered" id="table_priznanje">
+            <thead>
+              <tr>
+                <th  class="table-primary" scope="col">Naziv</th>
+                <th  class="table-primary" scope="col" colspan="3">Bodovi</th>
+              </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <hr>
+    <button type="submit" class="btn btn-secondary btn-lg">POTVRDI <i class="fa fa-user-plus"></i></button>
+  </form>
+</div>
 
 {% endblock %}

@@ -5,8 +5,11 @@
 {% endblock %}
 
 {% block body %}
-  <h4>  Edit {{ucenik.ime}} {{ucenik.prezime}} </h4>
 
+<div class="container">
+    <h4 style="text-align:center">  Edit </h4>
+    <h4 style="text-align:center">  {{ucenik.ime}} {{ucenik.prezime}} </h4>
+    <hr>
   <div class="table-responsive">
     <form action="{%url 'tehnicka:details' ucenik.id%}" method='POST'>
       {% csrf_token %}
@@ -66,8 +69,63 @@
         </table>
       </div>
 
+      {% if priznanja %}
+      <!-- Tabela priznanja-->
+       <div class="table-responsive" id="table_div_priznanje_ne_sakrivaj" >
+         <!-- Necemo dodati ovdje add -->
+        <!-- <a href="#" id="priznanja_btn" class="btn btn btn-outline-secondary">Dodaj priznanje <i class="fa fa-certificate"></i></a>
+        <hr> -->
+
+         <table class="table table-sm table-hover table-bordered" id="table_priznanje">
+           <thead>
+             <tr>
+               <th  class="table-primary" scope="col">Naziv </th>
+               <th class="table-primary" scope="col" colspan="2"> Bodovi </th>
+             </tr>
+           </thead>
+           <tbody>
+
+           {% for priznanje in priznanja %}
+           <tr>
+             <td><input type="text" name="priznanje_naziv" value="{{priznanje.naziv}}"></td>
+             <td> <input type="number" name="priznanje_bodovi" value="{{priznanje.bodovi}}"> </td>
+             	<td class="table-light">
+                <!-- <form class="" action="{%url 'tehnicka:brisipriznanje' priznanje.id%}" method="post"> -->
+                  <a href="{% url 'tehnicka:brisipriznanje' priznanje.id %}" id="brisi_priznanje" class="ne_moze_dodati_novo_ovdje"> <span> Izbrisi</span><i class="fa fa-trash"></i> </a>
+                <!-- </form> -->
+              </td>
+           </tr>
+           {% endfor %}
+           </tbody>
+         </table>
+       </div>
+
+      {% else %}
+      <div class="table-responsive">
+
+        <a href="#" id="priznanja_btn" class="btn btn btn-outline-secondary">Dodaj priznanje <i class="fa fa-certificate"></i></a>
+
+        <div class="table-responsive" id="table_div_priznanje">
+          <hr>
+          <table class="table table-sm table-hover table-bordered" id="table_priznanje">
+            <thead>
+              <tr>
+                <th  class="table-primary" scope="col">Naziv</th>
+                <th  class="table-primary" scope="col" colspan="3">Bodovi</th>
+              </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <hr>
+      {% endif %}
+
       <button type="submit" class="btn btn-secondary btn-lg"> Spasi promjene <i class="fa fa-user-plus"></i></button>
     </form>
   </div>
 
+</div>
 {% endblock %}
