@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from tehnicka.models import Ucenik, Smjer, Predmet
-from .forms import UcenikForm
+
 # Create your views here.
 
 def index(request):

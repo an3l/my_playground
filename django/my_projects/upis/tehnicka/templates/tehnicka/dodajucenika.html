@@ -16,7 +16,8 @@
             <th  class="table-info" scope="col">#</th>
             <th  class="table-info" scope="col">Ime</th>
             <th  class="table-info" scope="col">Prezime</th>
-            <th  class="table-info" scope="col">JMBG</th>
+            <!-- <th  class="table-info" scope="col">JMBG</th> -->
+            <th  class="table-info" scope="col">Osnovna skola </th>
             <th  class="table-info" scope="col">Smjer</th>
           </tr>
         </thead>
@@ -25,7 +26,8 @@
             <th scope="row">1</th>
             <td> <input type="text" name="ime" value=""> </td>
             <td> <input type="text" name="prezime" value=""></td>
-            <td> <input type="text" name="jmbg" value=""></td>
+            <!-- <td> <input type="text" name="jmbg" value=""></td> -->
+            <td> <input type="text" name="osnovna_skola" value=""></td>
             <td>
               <select class="" name="smjer">
                 {% for smjer in smjerovi %}
@@ -44,7 +46,6 @@
           <thead>
             <tr>
               <th  class="table-info" scope="col">Predmeti</th>
-              <th  class="table-info" scope="col">Razred - 5</th>
               <th  class="table-info" scope="col">Razred - 6</th>
               <th  class="table-info" scope="col">Razred - 7</th>
               <th  class="table-info" scope="col">Razred - 8</th>
@@ -55,11 +56,27 @@
             {% for predmet in predmeti_header %}
             <tr>
               <td>{{predmet.naziv}}</td>
-              <td> <input type="number" min=2 max=5 name="razred5" value=""> </td>
-              <td> <input type="number" min=2 max=5 name="razred6" value=""></td>
-              <td> <input type="number" min=2 max=5  name="razred7" value=""></td>
-              <td> <input type="number" min=2 max=5  name="razred8" value=""></td>
-              <td> <input type="number" min=2 max=5  name="razred9" value=""></td>
+              <!--nema fizike u 6 razredu, nema hemije u 6  -->
+              {% if forloop.counter == 5 or forloop.counter == 6 %}
+                <td> <input type="number" min=2 max=5 name="razred6" value="" disabled></td>
+              {% else %}
+                <td> <input type="number" min=2 max=5 name="razred6" value="2"></td>
+              {% endif %}
+                <!--nema hemije u 7 razredu -->
+              {% if forloop.counter == 6 %}
+                <td> <input type="number" min=2 max=5  name="razred7" value="" disabled></td>
+              {% else %}
+                <td> <input type="number" min=2 max=5  name="razred7" value="" ></td>
+              {% endif %}
+
+              <!--nema informatike u 8. i 9. razredu -->
+            {% if forloop.counter == 14 %}
+              <td> <input type="number" min=2 max=5  name="razred8" value="" disabled></td>
+              <td> <input type="number" min=2 max=5  name="razred9" value="" disabled></td>
+            {% else %}
+                <td> <input type="number" min=2 max=5  name="razred8" value="2"></td>
+                <td> <input type="number" min=2 max=5  name="razred9" value="2"></td>
+            {% endif %}
             </tr>
             {% endfor %}
           </tbody>
@@ -76,7 +93,8 @@
             <thead>
               <tr>
                 <th  class="table-primary" scope="col">Naziv</th>
-                <th  class="table-primary" scope="col" colspan="3">Bodovi</th>
+                <th  class="table-primary" scope="col" colspan="1">Bodovi</th>
+                <th  class="table-primary" scope="col" colspan="2">Vrsta takmicenja</th>
               </tr>
             </thead>
             <tbody>

@@ -14,7 +14,8 @@ class Smjer(models.Model):
 class Ucenik(models.Model):
     ime=models.CharField(max_length=50)
     prezime=models.CharField(max_length=50)
-    JMBG=models.IntegerField(null=True, blank=False)
+    # JMBG=models.IntegerField(null=True, blank=False)
+    osnovna_skola=models.CharField(max_length=50)
     smjer=models.ForeignKey(Smjer, on_delete=models.CASCADE)
     # Ukoliko ne bismo trazili listanje po smjerovima
     #smjer=model.CharField(max_length=3,choices=smjerovi, default=automaticar)
@@ -41,16 +42,32 @@ class Ucenik(models.Model):
     def __str__(self):
         return f"id:{self.id}:{self.ime}-{self.prezime}"
 
+# class Takmicenje(models.Model):
+#     kod=models.CharField(max_length=64)
+#     naziv=models.CharField(max_length=64)
+#     class Meta:
+#         verbose_name_plural = "Takmicenja"
+#     def __str__(self):
+#         return f"{self.kod}-{self.naziv}"
+
 class Priznanja(models.Model):
     naziv=models.CharField(max_length=64)
     bodovi=models.IntegerField(default='0')
     ucenik_id=models.ForeignKey(Ucenik, on_delete=models.CASCADE)
+    # vrsta_takmicenja=models.ForeignKey(Takmicenje, on_delete=models.CASCADE)
+    class Meta:
+        verbose_name_plural = "Priznanja"
     def __str__(self):
         return f"id:{self.id}:{self.naziv}-{self.bodovi}"
 
 class PredmetIspis(models.Model):
     kod=models.CharField(max_length=2, default='MM', blank=False)
     naziv=models.CharField(max_length=64)
+    razred_id=models.IntegerField(default='5')
+    class Meta:
+        verbose_name_plural = "Predmeti_ispis"
+    def __str__(self):
+        return f"{self.razred_id}:{self.naziv}-{self.kod}"
 
 class Predmet(models.Model):
     kod=models.CharField(max_length=2, default='MM', blank=False)

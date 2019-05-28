@@ -26,27 +26,197 @@
         <table class="table table-sm table-hover table-bordered">
           <thead>
             <tr>
-              <th  class="table-info" scope="col">#</th>
-              <th  class="table-info" scope="col">Ime</th>
-              <th  class="table-info" scope="col">Prezime</th>
-              <th  class="table-info" scope="col">JMBG</th>
-              <th  class="table-info" scope="col" >Bodovi</th>
-              <th  class="table-info" scope="col" colspan="3">Smjer</th>
+              <th  class="table-info" scope="col" rowspan="2">#</th>
+              <th  class="table-info" scope="col" rowspan="3">Ime</th>
+              <th  class="table-info" scope="col" rowspan="3">Prezime</th>
+              <th  class="table-info" scope="col" rowspan="3">Osnovna skola</th>
+              <th  class="table-info" scope="col" rowspan="3" colspan="5" ><strong>I Opći kriterij </strong>
+              <br> <em> Uspjeh VI-IX razreda o.š </em></th>
+              <th  class="table-info" scope="col" rowspan="3" colspan="7" ><strong> II Posebni kriterij</strong>
+              <br> <em> Relevantni nastavni predmeti </em></th>
+              <th  class="table-info" scope="col" rowspan="3" colspan="3" ><strong>III Opći kriterij</strong>
+              <br> <em> Uspjeh VI-IX razreda o.š</em></th>
+              <th  class="table-danger" scope="col" rowspan="3"colspan="1">Suma</th>
+              {% if request.user.is_authenticated %}
+                <th class="table-info" scope="col" rowspan="3"colspan="2"></th>
+              {% endif %}
             </tr>
           </thead>
           <tbody>
-            {% for ucenik in ucenici %}
             <tr>
-              <th scope="row">{{ forloop.counter }}</th>
-              <td>{{ ucenik.ime }}</td>
-              <td>{{ ucenik.prezime }}</td>
-              <td>{{ ucenik.JMBG }}</td>
-              <td>{{ ucenik.smjer.naziv }}</td>
-              <td>{{ bodovi}}</td>
-              <td> <a href="{% url 'tehnicka:details' ucenik.id %}"> <span> Uredi </span><i class="fa fa-user"></i> </a> </td>
-              <td> <a href="{% url 'tehnicka:delete' ucenik.id %}"> <span> Izbriši </span><i class="fa fa-user-times"></i> </a> </td>
+              <th class="table-info" scope="col" rowspan="1"></th>
+              <th class="table-info" scope="col" rowspan="1"></th>
+              <th class="table-info" scope="col" rowspan="1"></th>
+              <th class="table-info" scope="col" rowspan="1"></th>
+              <th class="table-info" scope="col" rowspan="1"></th>
+              <th class="table-info" scope="col" rowspan="1"></th>
+              <th class="table-info" scope="col" rowspan="1"></th>
+              <th class="table-info" scope="col" rowspan="1"></th>
+              <th class="table-info" scope="col" rowspan="1"></th>
+
+              <th  class="table-info" scope="col" rowspan="1" colspan="2" >{{ posebni_predmet_1}}</th>
+              <th  class="table-info" scope="col" rowspan="1" colspan="2">{{ posebni_predmet_2}}</th>
+              <th  class="table-info" scope="col" rowspan="1" colspan="2">{{ posebni_predmet_3}}</th>
+
+              <th  class="table-danger" scope="col" rowspan="2" colspan="1"> <center> Ukupno </center>  </th>
+              <th class="table-info" scope="col" rowspan="1"></th>
+              <th class="table-info" scope="col" rowspan="1"></th>
+              <th class="table-info" scope="col" rowspan="1"></th>
+              <th class="table-danger" scope="col" rowspan="1"></th>
+              {% if request.user.is_authenticated %}
+                <th class="table-info" scope="col" rowspan="3"colspan="2"></th>
+              {% endif %}
             </tr>
-            {% endfor%}
+
+            <tr>
+              <th class="table-info" scope="col" rowspan="1"></th>
+              <th class="table-info" scope="col" rowspan="1"></th>
+              <th class="table-info" scope="col" rowspan="1"></th>
+              <th class="table-info" scope="col" rowspan="1"></th>
+              <th class="table-info" scope="col" rowspan="1"> VI </th>
+              <th class="table-info" scope="col" rowspan="1"> VII </th>
+              <th class="table-info" scope="col" rowspan="1"> VIII </th>
+              <th class="table-info" scope="col" rowspan="1"> IX </th>
+              <th class="table-danger" scope="col" rowspan="1"> <center> Ukupno </center> </th>
+
+              <th class="table-info" scope="col" rowspan="1"> VIII </th>
+              <th class="table-info" scope="col" rowspan="1"> IX </th>
+              <th class="table-info" scope="col" rowspan="1"> VIII </th>
+              <th class="table-info" scope="col" rowspan="1"> IX </th>
+              <th class="table-info" scope="col" rowspan="1"> VI </th>
+              <th class="table-info" scope="col" rowspan="1"> VII </th>
+
+              <th class="table-info" scope="col" rowspan="1">O</th>
+              <th class="table-info" scope="col" rowspan="1">K</th>
+              <th class="table-info" scope="col" rowspan="1">F</th>
+              <th class="table-danger" scope="col" rowspan="1"></th>
+            </tr>
+            <!-- DATA -->
+            <tr>
+              {% for ucenik in ucenici %}
+              <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <td>{{ ucenik.ime }}</td>
+                <td>{{ ucenik.prezime }}</td>
+                <td>{{ ucenik.osnovna_skola }}</td>
+
+                <!-- // I prosjek ocjena 6-9 -->
+                {% for key, value in prosjek_6.items %}
+                  {% if key == ucenik.id %}
+                  <td>{{ value }}</td>
+                  {% endif %}
+                {% endfor%}
+
+                {% for key, value in prosjek_7.items %}
+                  {% if key == ucenik.id %}
+                  <td>{{ value }}</td>
+                  {% endif %}
+                {% endfor%}
+
+                {% for key, value in prosjek_8.items %}
+                  {% if key == ucenik.id %}
+                  <td>{{ value }}</td>
+                  {% endif %}
+                {% endfor%}
+
+                {% for key, value in prosjek_9.items %}
+                  {% if key == ucenik.id %}
+                  <td>{{ value }}</td>
+                  {% endif %}
+                {% endfor%}
+
+                <!-- // I prosjek ocjena ukupno -->
+                {% for key, value in prosjek_ukupno.items %}
+                  {% if key == ucenik.id %}
+                  <td class="table-danger">{{ value }}</td>
+                  {% endif %}
+                {% endfor%}
+
+                <!-- // II posebni predmeti po smjerovima-->
+                {% for key, value in posebni_predmet_1_ocjena_razred8.items %}
+                  {% if key == ucenik.id %}
+                  <td>{{ value }}</td>
+                  {% endif %}
+                {% endfor%}
+                {% for key, value in posebni_predmet_1_ocjena_razred9.items %}
+                  {% if key == ucenik.id %}
+                  <td>{{ value }}</td>
+                  {% endif %}
+                {% endfor%}
+                {% for key, value in posebni_predmet_2_ocjena_razred8.items %}
+                  {% if key == ucenik.id %}
+                  <td>{{ value }}</td>
+                  {% endif %}
+                {% endfor%}
+                {% for key, value in posebni_predmet_2_ocjena_razred9.items %}
+                  {% if key == ucenik.id %}
+                  <td>{{ value }}</td>
+                  {% endif %}
+                {% endfor%}
+                {% for key, value in posebni_predmet_3_ocjena_razred6.items %}
+                  {% if key == ucenik.id %}
+                  <td>{{ value }}</td>
+                  {% endif %}
+                {% endfor%}
+                {% for key, value in posebni_predmet_3_ocjena_razred7.items %}
+                  {% if key == ucenik.id %}
+                  <td>{{ value }}</td>
+                  {% endif %}
+                {% endfor%}
+
+                <!-- // II posebni predmeti po smjerovima ukupno-->
+                {% for key, value in posebni_predmet_ukupno.items %}
+                  {% if key == ucenik.id %}
+                  <td class="table-danger">{{ value }}</td>
+                  {% endif %}
+                {% endfor%}
+
+                <!-- // III -->
+                {% for key, value in priznanje_opcinsko.items %}
+                  {% if key == ucenik.id %}
+                  <td>{{ value }}</td>
+                  {% endif %}
+                {% endfor%}
+
+                {% for key, value in priznanje_kantonalno.items  %}
+                  {% if key == ucenik.id %}
+                  <td>{{ value }}</td>
+                  {% endif %}
+                {% endfor%}
+
+                {% for key, value in  priznanje_federalno.items %}
+                  {% if key == ucenik.id %}
+                  <td>{{ value }}</td>
+                  {% endif %}
+                {% endfor%}
+
+                <!-- // SUMA I,II,III -->
+                {% for key, value in  ukupno.items %}
+                  {% if key == ucenik.id %}
+                  <td class="table-danger" >{{ value }}</td>
+                  {% endif %}
+                {% endfor%}
+                {% if request.user.is_authenticated %}
+                  <td> <a href="{% url 'tehnicka:details' ucenik.id %}"> <span> Uredi </span><i class="fa fa-user"></i> </a> </td>
+                  <td> <a href="{% url 'tehnicka:delete' ucenik.id %}"> <span> Izbriši </span><i class="fa fa-user-times"></i> </a> </td>
+                {% endif %}
+
+              </tr>
+              {% endfor%}
+                <!-- {% if stari_commit%}
+                {% for ucenik in ucenici %}
+                <tr>
+                  <th scope="row">{{ forloop.counter }}</th>
+                  <td>{{ ucenik.ime }}</td>
+                  <td>{{ ucenik.prezime }}</td>
+                  <td>{{ ucenik.JMBG }}</td>
+                  <td>{{ ucenik.smjer.naziv }}</td>
+                  <td>{{ bodovi}}</td>
+                  <td> <a href="{% url 'tehnicka:details' ucenik.id %}"> <span> Uredi </span><i class="fa fa-user"></i> </a> </td>
+                  <td> <a href="{% url 'tehnicka:delete' ucenik.id %}"> <span> Izbriši </span><i class="fa fa-user-times"></i> </a> </td>
+                </tr>
+                {% endfor%}
+                {%endif%} -->
           </tbody>
         </table>
       </div>
