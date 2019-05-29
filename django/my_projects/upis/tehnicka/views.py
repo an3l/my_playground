@@ -414,6 +414,8 @@ def dodajucenika(request):
             'smjerovi': Smjer.objects.all(),
             'predmeti_header': deveti.order_by('-razred_id'),
             }
+            if not request.user.is_authenticated:
+                return render(request, "users/login.html", {"message": None})
             return render(request, 'tehnicka/dodajucenika.html', context)
 
 #### ---------------- EDIT/DETAILS VIEW  ---------------- ####
