@@ -1,0 +1,34 @@
+{% extends "tehnicka/base.html" %}
+{%block title%}
+  Spisak ucenika -svi
+{% endblock %}
+  <div class="container">
+    <h4 style="text-align:center">  Spisak ucenika </h4>
+    <div class="jumbotron">
+      <h1> Upis učenika u prvi razred 2019/2020</h1>
+      <h3> Tehnička škola Zenica </h3>
+      <h3> 2019/2020 </h3>
+    </div>
+  </div>
+{% block body %}
+  <div class="container">
+    {% for smjer in smjerovi%}
+    {% if smjer.id == 1 %}
+      <a href="{% url 'tehnicka:index' smjer.id %}"> <span> {{smjer.naziv}} </span><i class="fa fa-bolt"></i> </a>
+    {% endif %}
+    {% if smjer.id == 2 %}
+      <a href="{% url 'tehnicka:index' smjer.id %}"> <span> {{smjer.naziv}} </span><i class="fa fa-microchip"></i> </a>
+    {% endif %}
+    {% if smjer.id == 3 %}
+      <a href="{% url 'tehnicka:index' smjer.id %}"> <span> {{smjer.naziv}} </span><i class="fa fa-building"></i> </a>
+    {% endif %}
+    {% if smjer.id == 4 %}
+      <a href="{% url 'tehnicka:index' smjer.id %}"> <span> {{smjer.naziv}} </span><i class="fa fa-industry"></i> </a>
+    {% endif %}
+    {% if smjer.id == 5 %}
+      <a href="{% url 'tehnicka:index' smjer.id %}"> <span> {{smjer.naziv}} </span><i class="fa fa-flask"></i> </a>
+    {% endif %}
+    <br>
+    {% endfor %}
+  </div>
+{% endblock %}
