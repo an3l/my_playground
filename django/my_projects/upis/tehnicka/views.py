@@ -10,7 +10,13 @@ from django.db import transaction
 import json
 #### ---------------- INDEX VIEW  ---------------- ####
 # INDEX: This view should show all students with corresponding classes and grades
-def index(request):
+def index_base(request):
+    context={
+    'smjerovi': Smjer.objects.all()
+    }
+    return render(request, 'tehnicka/index_base.html',context)
+
+def index(request, smjer_id):
     message=''
     if request.session.get('message'):
         message='Korisnik obrisan!'
@@ -58,7 +64,7 @@ def index(request):
     priznanje_federalno_dict={}
 
 # =============== Racunanje statistike ===============
-    for ucenik in Ucenik.objects.all():
+    for ucenik in Ucenik.objects.filter(smjer=smjer_id):
         s=0 # prosjek po razredu laznjak -> brisi
 
         for razred in Diploma.objects.filter(ucenik_id=ucenik):
@@ -68,7 +74,7 @@ def index(request):
                 p=p+1
                 s1=s1+predmet.ocjena
                 # Handling posebni_bodovi na predmete automatika/arhitekture/energetike
-                if(ucenik.smjer.kod == 'AUT' or ucenik.smjer.kod == 'ARH' or ucenik.smjer.kod == 'EN'):
+                if(ucenik.smjer.kod == 'AUT' or ucenik.smjer.kod == 'ARH' or ucenik.smjer.kod == 'EL'):
                     posebni_predmet_1="Matematika"
                     posebni_predmet_2="Fizika"
                     posebni_predmet_3="Informatika"
@@ -205,7 +211,7 @@ def index(request):
 # =============== Prikazivanje statistike ===============
 
     context={
-    'ucenici':Ucenik.objects.all(),     # 'smjerovi':Smjer.objects.all(),
+    'ucenici':Ucenik.objects.filter(smjer=smjer_id),     # 'smjerovi':Smjer.objects.all(),
     'posebni_predmet_1':posebni_predmet_1,
     'posebni_predmet_2':posebni_predmet_2,
     'posebni_predmet_3':posebni_predmet_3,
@@ -234,10 +240,8 @@ def index(request):
 
     'message':message
     }
-    if request.user.is_authenticated:
-        return render(request, 'tehnicka/index.html',context)
-    else:
-        return render(request, "users/login.html", {"message": "Please log in."})
+    #if request.user.is_authenticated:
+    return render(request, 'tehnicka/index.html',context)
 
 #### ---------------- ADD VIEW  ---------------- ####
 # ADD STUDENT: This view should add new student (optional with data from form
@@ -386,7 +390,7 @@ def dodajucenika(request):
                     razred9.save()
 
                     # Vrati se na home page
-                    return HttpResponseRedirect(reverse('tehnicka:index'))
+                    return HttpResponseRedirect(reverse('tehnicka:index_base'))
 
                 except:
                     transaction.rollback()
@@ -483,7 +487,7 @@ def details(request, ucenik_id):
                         priznanje.save()
                         i=i+1
 
-            return HttpResponseRedirect(reverse('tehnicka:index'))
+            return HttpResponseRedirect(reverse('tehnicka:index_base'))
         except KeyError:
             return HttpResponse("Key error - post uredi")
 
@@ -512,9 +516,11 @@ def details(request, ucenik_id):
 
 #### ---------------- DELETE VIEW  ---------------- ####
 def delete(request, ucenik_id):
-    ucenik=Ucenik.objects.filter(id=ucenik_id).delete()
+    ucenik=Ucenik.objects.filter(id=ucenik_id)
+    smjer_id=ucenik[0].smjer.id
+    ucenik.delete()
     request.session['message']="Obrisan korisnik"
-    return HttpResponseRedirect(reverse('tehnicka:index'))
+    return HttpResponseRedirect(reverse('tehnicka:index', args=(smjer_id,)))
 
 
 def brisipriznanje(request, priznanje_id):

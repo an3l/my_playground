@@ -1,4 +1,6 @@
 from django.db import models
+import datetime
+
 
 # Create your models here.
 class Smjer(models.Model):
@@ -10,6 +12,11 @@ class Smjer(models.Model):
     def __str__(self):
         return f"id:{self.id}:{self.kod}-{self.naziv}"
 
+def current_year():
+    return datetime.date.today().year
+
+def year_choices():
+    return [(r,r) for r in range(1984, datetime.date.today().year+1)]
 
 class Ucenik(models.Model):
     ime=models.CharField(max_length=50)
@@ -17,6 +24,7 @@ class Ucenik(models.Model):
     # JMBG=models.IntegerField(null=True, blank=False)
     osnovna_skola=models.CharField(max_length=50)
     smjer=models.ForeignKey(Smjer, on_delete=models.CASCADE)
+    godina_upisa = models.IntegerField(default=current_year)
     # Ukoliko ne bismo trazili listanje po smjerovima
     #smjer=model.CharField(max_length=3,choices=smjerovi, default=automaticar)
     # opcionalno bi trebalo napraviti izbor za 3 smjera (manytomany)

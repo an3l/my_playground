@@ -60,13 +60,13 @@
               {% if forloop.counter == 5 or forloop.counter == 6 %}
                 <td> <input type="number" min=2 max=5 name="razred6" value="" disabled></td>
               {% else %}
-                <td> <input type="number" min=2 max=5 name="razred6" value="2"></td>
+                <td> <input type="number" min=2 max=5 name="razred6" value="5"></td>
               {% endif %}
                 <!--nema hemije u 7 razredu -->
               {% if forloop.counter == 6 %}
                 <td> <input type="number" min=2 max=5  name="razred7" value="" disabled></td>
               {% else %}
-                <td> <input type="number" min=2 max=5  name="razred7" value="" ></td>
+                <td> <input type="number" min=2 max=5  name="razred7" value="5" ></td>
               {% endif %}
 
               <!--nema informatike u 8. i 9. razredu -->
@@ -74,8 +74,8 @@
               <td> <input type="number" min=2 max=5  name="razred8" value="" disabled></td>
               <td> <input type="number" min=2 max=5  name="razred9" value="" disabled></td>
             {% else %}
-                <td> <input type="number" min=2 max=5  name="razred8" value="2"></td>
-                <td> <input type="number" min=2 max=5  name="razred9" value="2"></td>
+                <td> <input type="number" min=2 max=5  name="razred8" value="5"></td>
+                <td> <input type="number" min=2 max=5  name="razred9" value="5"></td>
             {% endif %}
             </tr>
             {% endfor %}
