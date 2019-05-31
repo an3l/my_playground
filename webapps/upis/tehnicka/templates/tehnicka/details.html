@@ -1,0 +1,198 @@
+{% extends "tehnicka/base.html" %}
+
+{% block title%}
+  Edit {{ucenik.ime}} {{uceni.prezime}}
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+    <h4 style="text-align:center">  Edit </h4>
+    <h4 style="text-align:center">  {{ucenik.ime}} {{ucenik.prezime}} </h4>
+    <hr>
+  <div class="table-responsive">
+    <form action="{%url 'tehnicka:details' ucenik.id%}" method='POST'>
+      {% csrf_token %}
+      <div class="table-responsive">
+        <table class="table table-sm table-hover table-bordered">
+          <thead>
+            <tr>
+              <th  class="table-info" scope="col">#</th>
+              <th  class="table-info" scope="col">Ime</th>
+              <th  class="table-info" scope="col">Prezime</th>
+              <th  class="table-info" scope="col">Osnovna škola</th>
+              <th  class="table-info" scope="col">Smjer</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">1</th>
+              <td> <input type="text" name="ime" value="{{ucenik.ime}}"> </td>
+              <td> <input type="text" name="prezime" value="{{ucenik.prezime}}"></td>
+              <td> <input type="text" name="osnovna_skola" value="{{ucenik.osnovna_skola}}"></td>
+              <td>
+                <select class="" name="smjer">
+                  <option value="{{ucenik.smjer.id}}" selected="selected">{{ucenik.smjer.naziv}}</option>
+                  {% for smjer in smjerovi %}
+                    {% if smjer.id != ucenik.smjer.id %}
+                      <option value="{{smjer.id}}"> {{smjer.naziv}}</option>
+                    {% endif %}
+                  {% endfor%}
+                </select>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+     <!-- Tabela sestog razreda -->
+      <div class="table-responsive">
+        <table class="table table-sm table-hover table-bordered">
+          <thead>
+            <tr>
+              <th  class="table-dark" scope="col">Razred</th>
+                {% for predmet in sesti %}
+                <th  class="table-dark" scope="col">{{ predmet.naziv}}</th>
+                {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>Sesti: </td>
+            {% for predmet in sesti %}
+            <td> <input type="number" min=2 max=5 name="razred6_ocjene" value="{{predmet.ocjena}}"> </td>
+            {% endfor %}
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Tabela sedmog razreda -->
+       <div class="table-responsive">
+         <table class="table table-sm table-hover table-bordered">
+           <thead>
+             <tr>
+               <th  class="table-secondary" scope="col">Razred</th>
+                 {% for predmet in sedmi %}
+                 <th  class="table-secondary" scope="col">{{ predmet.naziv}}</th>
+                 {% endfor %}
+             </tr>
+           </thead>
+           <tbody>
+           <tr>
+             <td>Sedmi: </td>
+             {% for predmet in sedmi %}
+             <td> <input type="number" min=2 max=5 name="razred7_ocjene" value="{{predmet.ocjena}}"> </td>
+             {% endfor %}
+           </tr>
+           </tbody>
+         </table>
+       </div>
+
+       <!-- Tabela osmog razreda -->
+        <div class="table-responsive">
+          <table class="table table-sm table-hover table-bordered">
+            <thead>
+              <tr>
+                <th  class="table-success" scope="col">Razred</th>
+                  {% for predmet in osmi %}
+                  <th  class="table-success" scope="col">{{ predmet.naziv}}</th>
+                  {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>Osmi: </td>
+              {% for predmet in osmi %}
+              <td> <input type="number" min=2 max=5 name="razred8_ocjene" value="{{predmet.ocjena}}"> </td>
+              {% endfor %}
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
+
+               <!-- Tabela devetog razreda -->
+      <div class="table-responsive">
+        <table class="table table-sm table-hover table-bordered">
+          <thead>
+            <tr>
+              <th  class="table-warning" scope="col">Razred</th>
+                {% for predmet in deveti %}
+                <th  class="table-warning" scope="col">{{ predmet.naziv}}</th>
+                {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>Deveti: </td>
+            {% for predmet in deveti %}
+            <td> <input type="number" min=2 max=5 name="razred9_ocjene" value="{{predmet.ocjena}}"> </td>
+            {% endfor %}
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+
+
+      {% if priznanja %}
+      <!-- Tabela priznanja-->
+       <div class="table-responsive" id="table_div_priznanje_ne_sakrivaj" >
+         <!-- Necemo dodati ovdje add -->
+        <!-- <a href="#" id="priznanja_btn" class="btn btn btn-outline-secondary">Dodaj priznanje <i class="fa fa-certificate"></i></a>
+        <hr> -->
+
+         <table class="table table-sm table-hover table-bordered" id="table_priznanje">
+           <thead>
+             <tr>
+               <th  class="table-primary" scope="col">Naziv </th>
+               <th class="table-primary" scope="col" colspan="2"> Bodovi </th>
+             </tr>
+           </thead>
+           <tbody>
+
+           {% for priznanje in priznanja %}
+           <tr>
+             <td><input type="text" name="priznanje_naziv" value="{{priznanje.naziv}}"></td>
+             <td> <input type="number" name="priznanje_bodovi" min="0" placeholder="0" value="{{priznanje.bodovi}}"> </td>
+             	<td class="table-light">
+                <!-- <form class="" action="{%url 'tehnicka:brisipriznanje' priznanje.id%}" method="post"> -->
+                  <a href="{% url 'tehnicka:brisipriznanje' priznanje.id %}" id="brisi_priznanje" class="ne_moze_dodati_novo_ovdje"> <span> Izbrisi</span><i class="fa fa-trash"></i> </a>
+                <!-- </form> -->
+              </td>
+           </tr>
+           {% endfor %}
+           </tbody>
+         </table>
+       </div>
+
+      {% else %}
+      <div class="table-responsive">
+
+        <a href="#" id="priznanja_btn" class="btn btn btn-outline-secondary">Dodaj priznanje <i class="fa fa-certificate"></i></a>
+
+        <div class="table-responsive" id="table_div_priznanje">
+          <hr>
+          <table class="table table-sm table-hover table-bordered" id="table_priznanje">
+            <thead>
+              <tr>
+                <th  class="table-primary" scope="col">Naziv</th>
+                <th  class="table-primary" scope="col" colspan="1">Bodovi</th>
+              </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <hr>
+      {% endif %}
+
+      <button type="submit" class="btn btn-secondary btn-lg"> Spasi promjene <i class="fa fa-user-plus"></i></button>
+    </form>
+  </div>
+
+</div>
+{% endblock %}

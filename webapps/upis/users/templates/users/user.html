@@ -1,0 +1,24 @@
+{% extends "users/base.html" %}
+{% block title %}
+  Zdravo {{ user.username}}
+{% endblock %}
+
+
+{% block body %}
+<div class="container">
+
+  <div class="jumbotron">
+    <h1> Upis učenika u prvi razred 2019/2020</h1>
+    <h3> Tehnička škola Zenica </h3>
+  </div>
+  <div class="continaer">
+      <h1>Zdravo {{ user.username }}</h1>
+
+    <p class="help-block">
+      Pristupite unosu novog ucenika.
+    </p>
+  </div>
+  <hr>
+
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+[uwsgi]
+home = /home/anel/my_playground/webapps
+chdir = %(home)/p_tscze
+wsgi-file = %(chdir)/p_tscze/sgi.py
+
+master=true
+processes=5
+
+socket = /home/anel/testproject.sock
+vacuum = true
+chown-socket = anel:www-data
+chmod-socket = 660
+
