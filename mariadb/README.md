@@ -44,3 +44,26 @@ For getting started see the link [get-code-build-test](https://mariadb.org/get-i
     /home/anel/workspace/mariadb/builds/build-10.1
     ```
     Delete `/tmp/datadir` and run from build directory : `mariadblocal` and server should install system tables and start the server
+  
+  My current remotes and branches
+  
+  upstreamssh/bb-10.2-anel
+  upstreamssh/bb-10.2-anel-MDEV19205
+  upstreamssh/bb-10.4-anel-fix-typo
+  upstreamssh/bb-anel-10.2-MDEV19679
+  upstreamssh/bb-anel-10.3-refactor-store_schema_params
+
+
+
+  upstream/bb-10.2-anel-MDEV19205
+  upstream/bb-10.3-anel-MDEV18323
+  upstream/bb-10.3-anel-check-constraint
+  upstream/bb-10.4-anel-fix-typo
+  upstream/bb-anel-10.2-MDEV19679
+  upstream/bb-anel-10.3-refactor-store_schema_params
+  upstream/bb-anel-MDEV-17429
+  upstream/bb-anel-check_constraing
+  upstream/bb-anel-json-v2
+  upstream/bb-anel-json-v2-10.3-recursion
+  upstream/bb-anel-json-v2-alter_force-10.3
+
