@@ -1,0 +1,2 @@
+To change the date:
+GIT_COMMITTER_DATE="Wed, 23 Oct 2019 17:40:24 +0500" git commit --amend --no-edit --date "Wed, 23 Oct 2019 17:40:24 +0500"
