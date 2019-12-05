@@ -45,6 +45,10 @@ For getting started see the link [get-code-build-test](https://mariadb.org/get-i
     ```
     Delete `/tmp/datadir` and run from build directory : `mariadblocal` and server should install system tables and start the server
   
+  To install system tables from OOT directory navigate to source directory:
+  ```
+  anel@anel:~/mariadb/builds/10.2-fix-check-constraint$ ./scripts/mysql_install_db --srcdir=/home/anel/mariadb/10.2
+  ```
   ### My current remotes and branches
   
   upstreamssh/bb-10.2-anel
