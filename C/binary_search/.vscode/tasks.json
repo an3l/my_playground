@@ -6,8 +6,10 @@
     {
       "label": "binary_search",
       "type": "shell",
-      "command": "/usr/bin/g++",
-      "args": ["-g", "${file}", "-o", "${fileDirname}/${fileBasenameNoExtension}", "-DALGO_WITH_SQRT"],
+      "command": "/usr/bin/g++-9",
+      "args": ["-Wall","-Wextra","-pedantic", "-fno-omit-frame-pointer",
+               "-g", "${file}", "-o", "${fileDirname}/${fileBasenameNoExtension}", 
+               "-DALGO_WITH_SQRT"],
       "group": {
         "kind": "build",
         "isDefault": true

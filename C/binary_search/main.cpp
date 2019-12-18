@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <stdio.h> // we can use <cstdlib> instead // http://www.cplusplus.com/reference/cstdlib/
 #include <iostream>
 #if defined(ALGO_WITH_SQRT)
 #include "math.h"
@@ -10,6 +10,7 @@ int search_algo(int *a, int n, int val)
     if (a[i] == val) return val;
     return -1;
   }
+  return -1;
 }
 #endif
 /*
@@ -49,6 +50,23 @@ int binary_search(int a[], int n, int val)
   return -1;
 
 }
+// function shall 
+int compareFcn(const void *a,const void *b)
+{
+  return (*(int *)a - *(int *)b);
+}
+void use_bsearch(int *a, int val)
+{
+  // http://www.cplusplus.com/reference/cstdlib/bsearch/
+  int *found_item;
+  found_item= (int*) bsearch((int *)&val, (int *)a, 10, sizeof(int), compareFcn);
+  if (found_item != NULL)
+    printf("Found %d\n", *found_item);
+  else
+    printf("Item not found!\n");
+  
+
+}
 int main()
 {
   // array a - from which we are looking values has to be sorted
@@ -65,7 +83,17 @@ int main()
     #if defined(ALGO_WITH_SQRT)
     printf("Imamo algo! \n");
     #endif
+
+    printf("\nTest built-in bsearch() in cstdlib: \n"); // works
+    use_bsearch(a, b[i]);
   }
+
+  // Let's test element of unsorted array
+  int x[10]={10, 8, 9, 1, 2, 3, 5, 4, 7, 6};
+  printf("\nTest unsorted array of bsearch(): \n");
+  qsort(x, 10, sizeof(int), compareFcn);
+  use_bsearch(x, 9);
+  // use bsearch()
   return 0;
 }
 
