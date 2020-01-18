@@ -1,78 +1,154 @@
-=========================================
-Getting started with djang0
-=========================================
-+++ Install virtualenv
-Install packages using pip (python package manager used to install and update packages) and virtual env1
-https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/
+---
+title: "Getting started with django"
+author: Anel Husakovic
+date: January 18, 2020
+output: project
+---
+
+### Install virtualenv
+Install packages using pip (python package manager used to install and update packages) and virtual [env1](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/).
+
 Latest version of pip
 ```
->>python3 -m pip install --user --upgrade pip
->>python3 -m pip --version
+>> python3 -m pip install --user --upgrade pip
+>> python3 -m pip --version
 pip 19.1.1 from /home/anel/.local/lib/python3.6/site-packages/pip (python 3.6)
 ```
 
-When using python3 or newer it is better to use `venv`
-https://docs.python.org/3.6/library/venv.html#module-venv
-* sudo apt install python3-venv
+When using python3 or newer it is better to use [venv](https://docs.python.org/3.6/library/venv.html#module-venv).
+```
+$ sudo apt install python3-venv
+$ python3 -m venv -h
+```
 
-// python2
-*sudo apt instal virtualenv (ili je pip install)
+* python2
+```
+$ sudo apt instal virtualenv (ili je pip install)
+```
 additionally (pip install virtualenwrapper) (see bellow more or in Project: django and nginx)
 
-1)Create virtualenvironment
-//python3 (-m => module script)
-* python3 -m venv /home/anel/workspace/eacon/web-workspace/django/my_projects
-// python2
-* virtualenv project-flights
-* virtualenv -h
-2) Get into virtualenvironment
-*source bin/activate # to get into (project-flights) environment and modify shell ; echo $PATH /home/anel/ENV/bin
-* which python && which python3
-Inside env/bin there are python2 and python3 exectuables
+### 1) Create virtualenvironment
+---
+* python3 (`-m` => module script)
+  This will place virtual env (a `bin/`, `lib/`, `lib64/`, `share/`, etc) in folder
+ `python3 -m venv /home/anel/workspace/eacon/web-workspace/django/my_projects`
+  Better to use shorter name `env` from current working directory in order to delete `rm -rf /path/to/env`
+* python2
+ `virtualenv project-flights`
+ `virtualenv -h`
+### 2) Get into virtualenvironment
+----
+`source env/bin/activate` # to get into (project-flights) environment and modify shell ; 
+`echo $PATH /home/anel/ENV/bin`
+* `which python && which python3`
+  ```
+  (env) anel@anel:~/my_playground/django/my_projects$ which python
+  /home/anel/my_playground/django/my_projects/env/bin/python
+  (env) anel@anel:~/my_playground/django/my_projects$ which python3
+  /home/anel/my_playground/django/my_projects/env/bin/python3
 
-**Note additinoally** Using virtualenwrapper.sh
-https://virtualenvwrapper.readthedocs.io/en/latest/
+  ```
+Inside `env/bin` there are python2 and python3 exectuables.
 
-*mkvirtualenv env1
-*ls $WORKON_HOME
-*mkvirtualenv env2
-*workon env1
-*(env1)$ echo $VIRTUAL_ENV
-
-3) Install django => "django-admin.py"
-*(env1)$ pip install django
-// python3 (installed via pip install django without --upgrade django, but pip is updated (see above))
-python -m django --version
-2.2.1
-// python 2
-* python -m django --version
-1.11.20
-*(env1)$ lssitepackages # see the new packages
-
-postmkvirtualenv is run when a new environment is created, letting you automatically install commonly-used tools.
-*(env2)$ echo 'pip install sphinx' >> $WORKON_HOME/postmkvirtualenv
-*(env2)$ mkvirtualenv env3
-*(env3)$ which sphinx-build
-
-===========================
-django
-
-
-4) Start *project* "mysite" or "flights" = > "manage.py" and "fligts/"
-   In "flights/" (__init__.py, settings.py, urls.py, wsgi.py)
+**Note additinoally** Using [virtualenwrapper.sh](https://virtualenvwrapper.readthedocs.io/en/latest/)
 ```
-  django-admin startproject mysite
-	django-admin version
+$ mkvirtualenv env1
+$ ls $WORKON_HOME
+$ mkvirtualenv env2
+$ workon env1
+$ (env1)$ echo $VIRTUAL_ENV
 ```
-  When running this parent a
-https://docs.djangoproject.com/en/1.11/ref/django-admin/
-5) Start django application (_flight_app)
+### 3) Install django => "django-admin.py"
+---
+* Before starting the new project make sure you are in `env` and you have installed module django.
 ```
-	python manage.py startapp polls
+$ pip3 install django
+$ python -m django --version # python3 is not working here
+$ django-admin version
+3.0.2
 ```
-Development server, automatic reload
-	python manage.py runserver 0:8000  # for all hosts on network; without 0: only localhost
-Migrate tables from INSTALLED_APPS (django.contrib.admin etc), change Time_zone to Europe/Sarajevo and set database in mysites/settings.py
+* Older tests:
+
+  `$ (env)$ pip install django`
+  // python3 (installed via pip install django without --upgrade django, but pip is updated (see above))\
+  `$ python -m django --version`\
+  2.2.1\
+  // python 2\
+  `$ python -m django --version`\
+  1.11.20\
+  `$(env)$ lssitepackages `# see the new packages\
+  postmkvirtualenv is run when a new environment is created, letting you automatically install commonly-used tools.
+  ```
+  $ (env2)$ echo 'pip install sphinx' >> $WORKON_HOME/postmkvirtualenv
+  $ (env2)$ mkvirtualenv env3
+  $ (env3)$ which sphinx-build
+  ```
+* To start the [new project](https://docs.djangoproject.com/en/3.0/intro/tutorial01/#creating-a-project) we will have to be in `env`.
+```
+$(env) django-admin startproject enroll_students
+$ (env) anel@anel:~/my_playground/django/my_projects/enroll_students$ pwd
+/home/anel/my_playground/django/my_projects/enroll_students
+$ (env) anel@anel:~/my_playground/django/my_projects/enroll_students$ ls -l
+total 8
+drwxr-xr-x 2 anel anel 4096 Jan 18 08:46 enroll_students
+-rwxr-xr-x 1 anel anel  635 Jan 18 08:46 manage.py
+$ (env) anel@anel:~/my_playground/django/my_projects/enroll_students/enroll_students$ ls -la
+total 24
+drwxr-xr-x 2 anel anel 4096 Jan 18 08:46 .
+drwxr-xr-x 3 anel anel 4096 Jan 18 08:46 ..
+-rw-r--r-- 1 anel anel  407 Jan 18 08:46 asgi.py
+-rw-r--r-- 1 anel anel    0 Jan 18 08:46 __init__.py
+-rw-r--r-- 1 anel anel 3115 Jan 18 08:46 settings.py
+-rw-r--r-- 1 anel anel  757 Jan 18 08:46 urls.py
+-rw-r--r-- 1 anel anel  407 Jan 18 08:46 wsgi.py
+```
+We will get directory with some auto-generated code. Top directory is name of project, and the same name bellow is for the application directory.
+
+
+
+### 4) Run the application
+---
+
+When running this parent a [django-admin](https://docs.djangoproject.com/en/1.11/ref/django-admin)
+
+* Start django application (`enroll_student`)
+- Name of project `enroll_students` cannot be the same as name of app `enroll_student`
+```
+(env) anel@anel:~/my_playground/django/my_projects$ python enroll_students/manage.py startapp enroll_students
+CommandError: 'enroll_students' conflicts with the name of an existing Python module and cannot be used as an app name. Please try another name.
+(env) anel@anel:~/my_playground/django/my_projects$ python enroll_students/manage.py startapp enroll_student
+(env) anel@anel:~/my_playground/django/my_projects$ ls
+enroll_student  enroll_students  env  mysite_fligths
+```
+- Better run the starting the app from directory of the project `enroll_students`:
+```
+(env) anel@anel:~/my_playground/django/my_projects/enroll_students$ python3 manage.py startapp tet
+(env) anel@anel:~/my_playground/django/my_projects/enroll_students$ ls
+enroll_students  manage.py  tet
+```
+Even better is to create name of app with prefix `_app`: `_enroll_student_app`.
+  This project directory has `settings.py` where can be foudn variable `INSTALLED_APPS` where we need to register our app.
+  - Delete the app [link](https://stackoverflow.com/questions/35745220/how-to-remove-an-app-from-a-django-projects-and-all-its-tables):
+    - If app is not registered, just `rm -rf`.
+    - If yes we have to delete it from `settings.py`.
+
+* Development server, automatic reload\
+	`python manage.py runserver 0:8000  # for all hosts on network; without 0: only localhost`
+  ```
+    (env) anel@anel:~/my_playground/django/my_projects/enroll_students$ python manage.py runserver
+    Watching for file changes with StatReloader
+    Performing system checks...
+
+    System check identified no issues (0 silenced).
+
+    You have 17 unapplied migration(s). Your project may not work properly until you apply the migrations for app(s): admin, auth, contenttypes, sessions.
+    Run 'python manage.py migrate' to apply them.
+
+    January 18, 2020 - 08:12:08
+    Django version 3.0.2, using settings 'enroll_students.settings'
+  ```
+//// Until here ->1. commit
+* Migrate tables from INSTALLED_APPS (django.contrib.admin etc), change Time_zone to Europe/Sarajevo and set database in mysites/settings.py
 	python manage.py migrate
 	sudo apt-get install sqlite3 libsqlite3-dev
 5.1) It is good to create a custom urls.py per application (see flight_app/urls.py)
