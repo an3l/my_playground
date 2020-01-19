@@ -33,6 +33,8 @@ additionally (pip install virtualenwrapper) (see bellow more or in Project: djan
   This will place virtual env (a `bin/`, `lib/`, `lib64/`, `share/`, etc) in folder
  `python3 -m venv /home/anel/workspace/eacon/web-workspace/django/my_projects`
   Better to use shorter name `env` from current working directory in order to delete `rm -rf /path/to/env`
+  So to create it use:
+  `python3 -m venv env`
 * python2
  `virtualenv project-flights`
  `virtualenv -h`
@@ -147,13 +149,85 @@ Even better is to create name of app with prefix `_app`: `_enroll_student_app`.
     January 18, 2020 - 08:12:08
     Django version 3.0.2, using settings 'enroll_students.settings'
   ```
-//// Until here ->1. commit
-* Migrate tables from INSTALLED_APPS (django.contrib.admin etc), change Time_zone to Europe/Sarajevo and set database in mysites/settings.py
-	python manage.py migrate
-	sudo apt-get install sqlite3 libsqlite3-dev
-5.1) It is good to create a custom urls.py per application (see flight_app/urls.py)
-5.2) DJango looks project-fligths/urls.py not our specific one, so we have to link it.
-6) MInimal working Examples
+* Migrate tables from `INSTALLED_APPS` (`django.contrib.admin` etc), change `Time_zone` to `Europe/Sarajevo` \
+`python manage.py migrate`
+```
+(env) anel@anel:~/my_playground/django/my_projects/enroll_students$ python manage.py migrate
+Operations to perform:
+  Apply all migrations: admin, auth, contenttypes, sessions
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying auth.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying sessions.0001_initial... OK
+  # Start server again:
+  (env) anel@anel:~/my_playground/django/my_projects/enroll_students$ python manage.py runserver
+  Watching for file changes with StatReloader
+  Performing system checks...
+
+  System check identified no issues (0 silenced).
+  January 18, 2020 - 09:48:02
+  Django version 3.0.2, using settings 'enroll_students.settings'
+  Starting development server at http://127.0.0.1:8000/
+  Quit the server with CONTROL-C.
+```
+We will later specify for which app we want migration ex. `python manage.py migrate _enroll_student_app`.
+* Setting up the datebase:
+- In order to use `mariadb` install : `pip install django mysqlclient` 
+/// not working with pip3 /// mysqlclient-1.4.6
+[digital-ocean-link](https://www.digitalocean.com/community/tutorials/how-to-use-mysql-or-mariadb-with-your-django-application-on-ubuntu-14-04)
+- Change to mysql: [set database](https://docs.djangoproject.com/en/3.0/ref/settings/#databases) (support for [MariaDB](https://docs.djangoproject.com/en/dev/ref/databases/#mariadb-notes) in `django 3.0`) in `<project>/settings.py`\
+  - change configuration for [auth-plugin](https://stackoverflow.com/a/54072297) in `/etc/mysql/conf.d`
+  - For [not-auth-plugin solution](https://mariadb.com/kb/en/error-logging-in/).
+- For `sqlite`:\
+	`sudo apt-get install sqlite3 libsqlite3-dev`
+- Start the mysql (mariadb) [how to install](https://linuxize.com/post/how-to-install-mariadb-on-ubuntu-18-04/), [mariadb repo](https://downloads.mariadb.org/mariadb/repositories/#distro=Ubuntu&distro_release=bionic--ubuntu_bionic&mirror=yongbok&version=10.4)
+- Had some problems in configuring mariadb:
+    Workaround:
+    - Stop the service: `sudo systemctl stop mysql`
+    - Start `mysqld_safe`
+    ```
+    sudo mysqld_safe --skip-grant-tables &
+    ```
+    - Log in into unprotected server `mysql`
+    - Run: `flush privileges`;
+    - Create new user: 
+    ```
+    $ create user eco_anel identified by `a`; # host=`%`
+    $ select user,host from mysql.user \G 
+    $ select * from mysql.global_priv\G 
+    # we will have to add grants to user here
+    $ show grants for 'eco_anel'@'%';
+    $ select * from mysql.user where user='eco_anel'\G
+    $ grant all privileges on *.* to 'eco_anel'@'%';
+    $
+    ```
+    - Stop the mysqld_safe (or `sudo kill -9 PID`):
+    `sudo mysqladmin shutdown`
+    - Start the client: `mysql -u eco_anel -p`
+    - `$create database`
+    https://mariadb.org/authentication-in-mariadb-10-4/
+- Guard settings using environment variable or [python-decouple](https://github.com/henriquebastos/python-decouple)
+  - [talk about pass on github](https://www.youtube.com/watch?v=2uaTPmNvH0I&feature=youtu.be)
+  - pip install what needed (`unipath`, `dj_database_url`) and change `settings.py`
+  - exit scale mode and full screen ubuntu VM - `F11`
+
+* It is good to create a custom urls.py per application (see flight_app/urls.py)
+* Django looks project-fligths/urls.py not our specific one, so we have to link it.
+### 5) MInimal working Examples
   ```
   ./manage.py runserver
   ```
