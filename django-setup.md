@@ -224,10 +224,10 @@ We will later specify for which app we want migration ex. `python manage.py migr
   - [talk about pass on github](https://www.youtube.com/watch?v=2uaTPmNvH0I&feature=youtu.be)
   - pip install what needed (`unipath`, `dj_database_url`) and change `settings.py`
   - exit scale mode and full screen ubuntu VM - `F11`
-
-* It is good to create a custom urls.py per application (see flight_app/urls.py)
+* From `_my_app/apps.py` add `MyAppConfig` to `settings.py`
+* It is good to create a custom urls.py per application
 * Django looks project-fligths/urls.py not our specific one, so we have to link it.
-### 5) MInimal working Examples
+### 5) Minimal working Examples
   ```
   ./manage.py runserver
   ```
