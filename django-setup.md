@@ -224,101 +224,80 @@ We will later specify for which app we want migration ex. `python manage.py migr
   - [talk about pass on github](https://www.youtube.com/watch?v=2uaTPmNvH0I&feature=youtu.be)
   - pip install what needed (`unipath`, `dj_database_url`) and change `settings.py`
   - exit scale mode and full screen ubuntu VM - `F11`
-* From `_my_app/apps.py` add `MyAppConfig` to `settings.py`
-* It is good to create a custom urls.py per application
-* Django looks project-fligths/urls.py not our specific one, so we have to link it.
-### 5) Minimal working Examples
+* From `_my_app/apps.py` register app by adding `MyAppConfig` to `settings.py`
+* It is good to create a custom `_my_app/urls.py` per application, since Django looks `project-fligths/urls.py` not our specific one, so we have to link it by __include__ that file to `project/urls.py`.
+* Create functions in views and use `HttpResponse` in views to send to browser.
+
+### 5) Minimal working Example
+---
   ```
   ./manage.py runserver
   ```
 
-7) Migration => modification of your data in app.models.py
+### 6) Migration => modification of your data in app.models.py
+---
   configuration => settings.py INSTALLED_APPS
 
-  '_flight_app.apps.FligthsAppConfig' see app/apps.py
-  ./manage.py makemigrations will automtaically generate migrations (create databse table or similar)
-  all changes made to database. Created 0001_initial.py file.
-  id added automtically
-  ```
-  ./manage.py makemigrations
-Migrations for '_fligths_app':
-  _fligths_app/migrations/0001_initial.py
-    - Create model Flight
-
-    class Migration(migrations.Migration):
-
-        initial = True
-
-        dependencies = [
-        ]
-
-        operations = [
-            migrations.CreateModel(
-                name='Flight',
-                fields=[
-                    ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                    ('origin', models.CharField(max_length=64)),
-                    ('destination', models.CharField(max_length=64)),
-                    ('duration', models.IntegerField()),
-                ],
-            ),
-        ]
-
-  ```
-* ./manage.py migrate
-* To see the list of commands use this:
+  We will have first to create tables in `models.py`.
+    - `./manage.py makemigrations` -> generate sql code in order to be applied to mariadb (create database, table or similar)
+    Created `0001_initial.py` file. `id` added automatically.
+    - `./manage.py migrate` -> apply sql code to databse
+    - To see the list of commands use `./manage.py sqlmigrate _my_app 0001`:
     ```
-    ./manage.py sqlmigrate _fligths_app 0001
-    BEGIN;
-    --
-    -- Create model Flight
-    --
-    CREATE TABLE "_fligths_app_flight" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "origin" varchar(64) NOT NULL, "destination" varchar(64) NOT NULL, "duration" integer NOT NULL);
-    COMMIT;
+        -- Create model table_co
+        --
+        CREATE TABLE `_my_app_table_co` (`id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY, `_city` varchar(64) NOT NULL, `_location` varchar(64) NOT NULL, `_value` varchar(64) NOT NULL, `_date` date NOT NULL);
+        --
+    ```
 
-    ```
-* settings.py
-  DATABASES dictionary {}
-
-8) ADD custom data
-* python manage.py shell
-    ```
-      >>> from _fligths_app.models import Flight
-      >>> f = Flight(origin="NY", destination="Sarajevo", duration=480)
-      >>> f.save()
-      >>> Flight.objects.all()
-      >>> f=Flight.objects.first() # access flight f.origin
-      >>> f.delete()
-    ```
-9) Add new Model and foreign keys and migrat
-./manage.py makemigrations
+### 7) Play with `shell` to add custom data
+---
+  - `python manage.py shell`
+```
+from _my_app.models import table_so2
+s=table_so2(_city="Zenica", _location="Bilimisce", _value=12);
+s.save()
+> table_so2.objects.all();
+<QuerySet [<table_so2: SO2 from Zenica: 12 at 2020-01-21 00:00:00+00:00>, <table_so2: SO2 from Zenica: 12 at 2020-01-21 00:00:00+00:00>, <table_so2: SO2 from Zenica: 50 at 2020-01-21 21:44:25.776345+00:00>]>
+> table_so2.objects.first();
+<table_so2: SO2 from Zenica: 12 at 2020-01-21 00:00:00+00:00>
+s=table_so2.objects.first() # access flight f.origin
+s.delete() # delete from databse
+```
+ - Add new Model and foreign keys and migrate
+`./manage.py makemigrations`
  ```
  - Create model Airport
 - Alter field destination on flight
 - Alter field origin on flight
  ```
-./manage.py migrate #apply migration
-* Test it in Shell
-  >>> a1 = Airport(code="NYC", city="New York")
-  >>> a1
+.`/manage.py migrate `#apply migration
+* Test it in Shell how to use _foreign key_ syntax when referencing \
+**related_name of foreign field**  in django.
+  ```
+  > a1 = Airport(code="NYC", city="New York")
+  > a1
   <Airport: New York (NYC)>
-  >>> a1.save()
-  >>> a2.save()
-  >>> Airport.objects.all()
+  > a1.save()
+  > a2.save()
+  > Airport.objects.all()
   <QuerySet [<Airport: New York (NYC)>, <Airport: Sarajevo (SA)>]>
-  >>> f=Flight(origin=a1, destination=a2, duration=343)
-  >>> f
+  > f=Flight(origin=a1, destination=a2, duration=343)
+  > f
   <Flight: from New York (NYC) to Sarajevo (SA)>
-  >>> a1.departures.all()
+  > a1.departures.all()
   <QuerySet [<Flight: from New York (NYC) to Sarajevo (SA)>]>
-  >>> a2.departures.all()
-  >>> a2.arrivals.all()
+  > a2.departures.all()
+  > a2.arrivals.all()
   <QuerySet [<Flight: from New York (NYC) to Sarajevo (SA)>]>
+  ```
 
-10) Using admin interface app/admin.py =>
-    * register models we want to use
-    * create user (login into admin site)
-        ./manage.py createsuperuser anel
+### 8) Using admin interface app/admin.py 
+---
+  - register models we want to use
+  - create user
+  `./manage.py createsuperuser anel`
+  - login into admin site
 
 
 11) Redirecting reverse() and adding the name of routes

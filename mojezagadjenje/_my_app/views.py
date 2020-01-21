@@ -3,7 +3,7 @@ from django.shortcuts import render
 
 # Create your views here.
 def index(request):
-    return HttpResponse("Hi There")
+    #return HttpResponse("Hi There")
     template_name="_flights_app/index.html"
     context={
         "flights":Flight.objects.all(),
