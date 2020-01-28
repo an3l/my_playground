@@ -30,17 +30,23 @@ additionally (pip install virtualenwrapper) (see bellow more or in Project: djan
 ### 1) Create virtualenvironment
 ---
 * python3 (`-m` => module script)
+
   This will place virtual env (a `bin/`, `lib/`, `lib64/`, `share/`, etc) in folder
- `python3 -m venv /home/anel/workspace/eacon/web-workspace/django/my_projects`
-  Better to use shorter name `env` from current working directory in order to delete `rm -rf /path/to/env`
-  So to create it use:
+
+  `python3 -m venv /home/anel/workspace/eacon/web-workspace/django/my_projects`
+  
+  Better to use shorter name `env` from current working directory.
+  
+  In order to delete `rm -rf /path/to/env`
+
+  So to create virtual environment, recommended way is to use:
   `python3 -m venv env`
-* python2
+* python2:\
  `virtualenv project-flights`
  `virtualenv -h`
 ### 2) Get into virtualenvironment
 ----
-`source env/bin/activate` # to get into (project-flights) environment and modify shell ; 
+`source env/bin/activate` # to get into (project-flights) environment and modify shell;\
 `echo $PATH /home/anel/ENV/bin`
 * `which python && which python3`
   ```
@@ -52,7 +58,7 @@ additionally (pip install virtualenwrapper) (see bellow more or in Project: djan
   ```
 Inside `env/bin` there are python2 and python3 exectuables.
 
-**Note additinoally** Using [virtualenwrapper.sh](https://virtualenvwrapper.readthedocs.io/en/latest/)
+**Note additionally** Using [virtualenwrapper.sh](https://virtualenvwrapper.readthedocs.io/en/latest/)
 ```
 $ mkvirtualenv env1
 $ ls $WORKON_HOME
@@ -66,8 +72,10 @@ $ (env1)$ echo $VIRTUAL_ENV
 ```
 $ pip3 install django
 $ python -m django --version # python3 is not working here
+$ which django-admin
+/home/anel/my_playground/mojezagadjenje/env/bin/django-admin
 $ django-admin version
-3.0.2
+3.0.4
 ```
 * Older tests:
 
@@ -85,7 +93,9 @@ $ django-admin version
   $ (env2)$ mkvirtualenv env3
   $ (env3)$ which sphinx-build
   ```
-* To start the [new project](https://docs.djangoproject.com/en/3.0/intro/tutorial01/#creating-a-project) we will have to be in `env`.
+#### 3.1) Start new project in django
+* To start the [new project](https://docs.djangoproject.com/en/3.0/intro/tutorial01/#creating-a-project) use __django-admin startproject project-name__.\
+We will have to be in `env`.
 ```
 $(env) django-admin startproject enroll_students
 $ (env) anel@anel:~/my_playground/django/my_projects/enroll_students$ pwd
@@ -104,20 +114,25 @@ drwxr-xr-x 3 anel anel 4096 Jan 18 08:46 ..
 -rw-r--r-- 1 anel anel  757 Jan 18 08:46 urls.py
 -rw-r--r-- 1 anel anel  407 Jan 18 08:46 wsgi.py
 ```
-We will get directory with some auto-generated code. Top directory is name of project, and the same name bellow is for the application directory.
+  We will get directory with some auto-generated code.\
+  Top directory is name of project, and the same name bellow is for the application directory.
 
 
 
 ### 4) Run the application
 ---
 
+#### 4.1) Create the application
 When running this parent a [django-admin](https://docs.djangoproject.com/en/1.11/ref/django-admin)
 
-* Start django application (`enroll_student`)
-- Name of project `enroll_students` cannot be the same as name of app `enroll_student`
+* Start django application using: __python3 manage.py startapp application-name__
+- Name of project `enroll_students` cannot be the same as name of app `enroll_students`.
 ```
 (env) anel@anel:~/my_playground/django/my_projects$ python enroll_students/manage.py startapp enroll_students
 CommandError: 'enroll_students' conflicts with the name of an existing Python module and cannot be used as an app name. Please try another name.
+```
+- It is better to give application a different name (`enroll_student`), different from project name (`enroll_students`)
+```
 (env) anel@anel:~/my_playground/django/my_projects$ python enroll_students/manage.py startapp enroll_student
 (env) anel@anel:~/my_playground/django/my_projects$ ls
 enroll_student  enroll_students  env  mysite_fligths
@@ -128,12 +143,12 @@ enroll_student  enroll_students  env  mysite_fligths
 (env) anel@anel:~/my_playground/django/my_projects/enroll_students$ ls
 enroll_students  manage.py  tet
 ```
-Even better is to create name of app with prefix `_app`: `_enroll_student_app`.
-  This project directory has `settings.py` where can be foudn variable `INSTALLED_APPS` where we need to register our app.
+- Even better is to create name of app with prefix `_app`, for example: `_enroll_student_app`.\
+  This project directory (from project, not app) has `settings.py` where can be found variable `INSTALLED_APPS` where we need to register our app.
   - Delete the app [link](https://stackoverflow.com/questions/35745220/how-to-remove-an-app-from-a-django-projects-and-all-its-tables):
     - If app is not registered, just `rm -rf`.
     - If yes we have to delete it from `settings.py`.
-
+#### 4.2) Start the server
 * Development server, automatic reload\
 	`python manage.py runserver 0:8000  # for all hosts on network; without 0: only localhost`
   ```
@@ -149,6 +164,7 @@ Even better is to create name of app with prefix `_app`: `_enroll_student_app`.
     January 18, 2020 - 08:12:08
     Django version 3.0.2, using settings 'enroll_students.settings'
   ```
+#### 4.3) Migrate the tables
 * Migrate tables from `INSTALLED_APPS` (`django.contrib.admin` etc), change `Time_zone` to `Europe/Sarajevo` \
 `python manage.py migrate`
 ```
@@ -184,9 +200,13 @@ Running migrations:
   Starting development server at http://127.0.0.1:8000/
   Quit the server with CONTROL-C.
 ```
+##### 4.3.1) Migrate the tables for specific application
 We will later specify for which app we want migration ex. `python manage.py migrate _enroll_student_app`.
+
+#### 4.4) Setup the database
 * Setting up the datebase:
-- In order to use `mariadb` install : `pip install django mysqlclient` 
+- In order to use `mariadb` install :\
+`pip install django mysqlclient`
 /// not working with pip3 /// mysqlclient-1.4.6
 [digital-ocean-link](https://www.digitalocean.com/community/tutorials/how-to-use-mysql-or-mariadb-with-your-django-application-on-ubuntu-14-04)
 - Change to mysql: [set database](https://docs.djangoproject.com/en/3.0/ref/settings/#databases) (support for [MariaDB](https://docs.djangoproject.com/en/dev/ref/databases/#mariadb-notes) in `django 3.0`) in `<project>/settings.py`\
@@ -195,7 +215,7 @@ We will later specify for which app we want migration ex. `python manage.py migr
 - For `sqlite`:\
 	`sudo apt-get install sqlite3 libsqlite3-dev`
 - Start the mysql (mariadb) [how to install](https://linuxize.com/post/how-to-install-mariadb-on-ubuntu-18-04/), [mariadb repo](https://downloads.mariadb.org/mariadb/repositories/#distro=Ubuntu&distro_release=bionic--ubuntu_bionic&mirror=yongbok&version=10.4)
-- Had some problems in configuring mariadb:
+- Had some problems in configuring mariadb:\
     Workaround:
     - Stop the service: `sudo systemctl stop mysql`
     - Start `mysqld_safe`
@@ -213,19 +233,23 @@ We will later specify for which app we want migration ex. `python manage.py migr
     $ show grants for 'eco_anel'@'%';
     $ select * from mysql.user where user='eco_anel'\G
     $ grant all privileges on *.* to 'eco_anel'@'%';
-    $
     ```
-    - Stop the mysqld_safe (or `sudo kill -9 PID`):
+    - Stop the mysqld_safe (or `sudo kill -9 PID`):\
     `sudo mysqladmin shutdown`
-    - Start the client: `mysql -u eco_anel -p`
+    - Start the client: \
+    `mysql -u eco_anel -p`
     - `$create database`
     https://mariadb.org/authentication-in-mariadb-10-4/
+  
+#### 4.5) Guard the password for the database
 - Guard settings using environment variable or [python-decouple](https://github.com/henriquebastos/python-decouple)
   - [talk about pass on github](https://www.youtube.com/watch?v=2uaTPmNvH0I&feature=youtu.be)
   - pip install what needed (`unipath`, `dj_database_url`) and change `settings.py`
   - exit scale mode and full screen ubuntu VM - `F11`
+
+#### 4.6) Register apps
 * From `_my_app/apps.py` register app by adding `MyAppConfig` to `settings.py`
-* It is good to create a custom `_my_app/urls.py` per application, since Django looks `project-fligths/urls.py` not our specific one, so we have to link it by __include__ that file to `project/urls.py`.
+* It is good to create a custom `_my_app/urls.py` per application, since Django looks `<project-name>/urls.py` not our specific one, so we have to link it by __include__ that file to `project/urls.py`.
 * Create functions in views and use `HttpResponse` in views to send to browser.
 
 ### 5) Minimal working Example
@@ -291,14 +315,27 @@ s.delete() # delete from databse
   > a2.arrivals.all()
   <QuerySet [<Flight: from New York (NYC) to Sarajevo (SA)>]>
   ```
-
+- Install `beautiful soup` via `pip3` and `selenium`:\
+`python3 -m pip install requests`\
+`python3 -m pip install --user "beautifulsoup4"`\
+or above didn't work-> `pip3 install beautifulsoup4`\
+`python3 -m pip install --user "selenium"`\
+or above didn't work-> `pip3 install selenium`\
+`gecodriver` needed https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz
+download to `env/bin` or system wide to `/usr/bin`
+good [link](https://stackoverflow.com/questions/44723713/python-beautifulsoup-iterating-through-tags-and-attributes)
 ### 8) Using admin interface app/admin.py 
 ---
   - register models we want to use
   - create user
   `./manage.py createsuperuser anel`
   - login into admin site
+  - example of [flights](https://github.com/an3l/my_playground/commit/ae1084854bfdd4ef8eb75eca8458ec5cb716fe7a)
 
+### 9) Adding templates
+---
+  - By default DjangoTemplates is looking under each app for `templates` subdirectory -> [link](https://docs.djangoproject.com/en/3.0/intro/tutorial03/#write-views-that-actually-do-something)
+  - Good practice is to __namespace__ templates: example: `<some_folder>/index.html` is calling `<_my_app>/<templates>/<some_folder>/index.html`.
 
 11) Redirecting reverse() and adding the name of routes
 12) Template inheritance (Django Template Language DTL not Jinja2)
