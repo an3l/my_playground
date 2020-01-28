@@ -1,7 +1,5 @@
 #include <iostream>
 #include <list>
-#include <string>
-#include <algorithm>
 
 class Player
 {
@@ -51,12 +49,20 @@ int main()
   }  
 
   // Sort list according the custom criteria , using functors (function objects):
-  listOfPlayers.sort(PlayerFunctor());
+  listOfPlayers.sort([](const Player &a, const Player &b)
+    {
+      if(a.name == b.name)
+        return a<b;
+      return a.name<b.name;
+    });
   std::cout<<"After sorting by name and using custom function object: \n";
   for(Player& p : listOfPlayers)
   {
     std::cout<<"Player id: "<<p.id<<" name: "<<p.name<<std::endl;
   } 
 
+  /*
+    Sort may be expensive if we have just a few rows
+  */
   return 0;
 }
