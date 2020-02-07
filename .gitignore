@@ -24,3 +24,4 @@ venv.bak/
 
 #Other
 *.tar.gz
+.vscode

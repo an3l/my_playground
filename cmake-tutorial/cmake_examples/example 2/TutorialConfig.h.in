@@ -1,7 +1,0 @@
-// the configured options and settings for Tutorial
-#define Tutorial_VERSION_MAJOR @Tutorial_VERSION_MAJOR@
-#define Tutorial_VERSION_MINOR @Tutorial_VERSION_MINOR@
-#define PROJECT_SOURCE_DIR "@PROJECT_SOURCE_DIR@"
-#define PROJECT_BINARY_DIR "@PROJECT_BINARY_DIR@"
-#define PROJECT_VERSION "@PROJECT_VERSION@"
-#cmakedefine USE_MYMATH
