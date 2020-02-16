@@ -2,6 +2,7 @@
 #include "string.h" //strtok
 
 /**
+ * Test 1
  * Usage of trtok (tokenize)
  * Destructive for original string, inserting 0 bytes
  * thread unsafe, strtok_r
@@ -13,6 +14,7 @@ void smallTest()
   In C++: type is constant array of char (not allowed to change the chars of strings, what strtok is doing)
   Using const_cast still not work
   char *c= const_cast<char *>("anel: husakovic, melisa: husakovic, hey");
+  But using `strdup(const char*)` will work! testStrtok2()
   */
   
   char c1[100]= "anel: husakovic, melisa: husakovic, hey";
@@ -25,7 +27,7 @@ void smallTest()
 }
 
 /**
- * Test2
+ * Test 2
  */
 void testStrtok()
 {
@@ -42,8 +44,58 @@ void testStrtok()
   printf("String: %s\nTokenize: %s\n", c1, tok);
 
 }
+
+/**
+ * Test 3
+ * char*=strdup(const char*)
+ * Not handling empty tokens
+ */
+void testStrtok2()
+{
+  char *original, *token;
+  original= strdup("Anel, Husakovic,,,Melisa, Husakovic!");
+  token= strtok(original, ",");
+  int num=1;
+  while(token!=NULL)
+  {
+    printf("-- Token|%s|; Num of token: %d --\n", token, num++);
+    // Cumbersome 2. call of strtok
+    token= strtok(NULL, ",");
+  }
+}
+
+/**
+ * Strtok() is using static variables for original string and is thread unsafe
+ * Using: strtok_r(), strsep (ansi compliant - portable), not handling emtpy token
+ * strtok_r is using 3.arg as a pointer to rest of string
+ * Different handling of empty delimiter
+ * strsep() may not be portable, but is handling empty token as null.
+ */
+void testThreadSafe()
+{
+  char *original, *original2, *token, *save_ptr;
+  original= strdup("Anel, Husakovic,,,Melisa, Husakovic!");
+  save_ptr= original;
+  int num=1;
+  printf("Using strtok_r: \n");
+  while((token= strtok_r(save_ptr, ",", &save_ptr))!=NULL)
+  {
+    printf("-- Token|%s|; Num of token: %d --\n", token, num++);
+  }
+
+  original2= strdup("Anel, Husakovic,,,Melisa, Husakovic!");
+  printf("Using strsep: \n");
+  num=1;
+  while((token= strsep(&original2, ","))!=NULL)
+  {
+    printf("-- Token|%s|; Num of token: %d --\n", token, num++);
+  }
+  
+}
+
 int main(int argc, char const *argv[])
 {
-  testStrtok();
+  //testStrtok2();
+  testThreadSafe();
   return 0;
 }
