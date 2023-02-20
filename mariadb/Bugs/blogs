@@ -1,0 +1,43 @@
+docker run -d --rm --name mariadb-primary \
+-v $PWD/config-files/primarycnf:/etc/mysql/conf.d:z \
+-v $PWD/primaryinit:/docker-entrypoint-initdb.d:z \
+-v $PWD/log-files-primary:/var/lib/mysql \
+-w /var/lib/mysql \
+-e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=True \
+-e MYSQL_INITDB_SKIP_TZINFO=Y \
+quay.io/mariadb-foundation/mariadb-devel:10.11
+
+# This should output sys var
+docker exec -it mariadb-primary mariadb -uroot -e "show global variables like 'replicate_rewrite%'";
+ 
+docker run -d --rm --name mariadb-secondary-1 \
+-v $PWD/config-files/secondary-1:/etc/mysql/conf.d:z \
+-v $PWD/secondaryinit:/docker-entrypoint-initdb.d:z \
+-v $PWD/log-files-secondary-1:/var/lib/mysql \
+-w /var/lib/mysql \
+-e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=True \
+-e MYSQL_INITDB_SKIP_TZINFO=Y \
+quay.io/mariadb-foundation/mariadb-devel:10.11  --replicate-rewrite-db='db1->db2'
+docker exec -it mariadb-secondary-1 mariadb -uroot -e "show global variables like 'replicate_rewrite%'";
+
+# THis should show replicate_rewrite_db https://github.com/MariaDB/server/pull/2231/commits/14f3505f68f43e1e8c9c7517b1208be62db515e1#diff-0a7bd720f86eea398c217107e96dd389398fa31ecc0dcb80586a0895541b9ea4R2957
+docker exec -it mariadb-secondary-1 mariadb -uroot -e "show slave status \G"
+
+#SLAVE:  Test behaviour, create DB on slave
+docker exec -it mariadb-secondary-1 mariadb -uroot -e "create database db2;";
+
+# Test behaviour, create DB on master and table
+docker exec -it mariadb-primary mariadb -uroot -e "create database db1; use db1; create table tp(t int); insert into tp values(1),(2);";
+docker exec -it mariadb-primary mariadb -uroot -e "use db1; show tables;";
+
+# Check the slave
+docker exec -it mariadb-secondary-1 mariadb -uroot -e "use db2; show tables;";
+
+
+
+
+# Blogs
+# https://sqlconjuror.com/mariadb-setup-gtid-replication-using-mariabackup/
+# https://mariadb.com/resources/blog/enabling-gtids-for-server-replication-in-mariadb-server-10-2/
+log_bin = 1
+gtid_strict_mode=1 on both servers

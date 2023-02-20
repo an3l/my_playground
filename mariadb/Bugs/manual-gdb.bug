@@ -1,0 +1,139 @@
+Bug in manual-gdb
+
+Starting program: /home/anel/mariadb/server/build/10.11/sql/mariadbd --defaults-group-suffix=.2 --defaults-file=/home/anel/mariadb/server/build/10.11/mysql-test/var/my.cnf --log-output=file --binlog-format=mixed --log-bin=slave-bin --log-bin=slave-bin 
+--replicate-rewrite-db=test->rewrite 
+"--replicate-rewrite-db=mysqltest1 -> test" 
+"--replicate-rewrite-db=x -> y" 
+--replicate-rewrite-db=database_master_temp_01->database_slave_temp_01 
+--replicate-rewrite-db=database_master_temp_02->database_slave_temp_02 
+--replicate-rewrite-db=database_master_temp_03->database_slave_temp_03 
+--core-file --loose-debug-sync-timeout=300 --loose-debug-gdb --loose-skip-stack-trace < /dev/null
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+2022-08-22  9:01:39 0 [ERROR] Bad syntax in replicate-rewrite-db: missing '->'
+[Inferior 1 (process 24481) exited with code 01]
+
+
+mtr_add_arg <- mysqld_arguments <-gdb_arguments
+
+
+Example of 
+$ /home/anel/mariadb/server/build/10.11/sql/mariadbd --defaults-group-suffix=.2 --defaults-file=/home/anel/mariadb/server/build/10.11/mysql-test/var/my.cnf --log-output=file --binlog-format=mixed --log-bin=slave-bin --log-bin=slave-bin 
+--replicate-rewrite-db=test->rewrite 
+--replicate-rewrite-db=mysqltest1 -> test 
+--replicate-rewrite-db=x -> y 
+--replicate-rewrite-db=database_master_temp_01->database_slave_temp_01 --replicate-rewrite-db=database_master_temp_02->database_slave_temp_02 --replicate-rewrite-db=database_master_temp_03->database_slave_temp_03 --core-file --loose-debug-sync-timeout=300
+
+$ cat var/tmp/gdbinit.mysqld.2 
+set args --defaults-group-suffix=.2 --defaults-file=/home/anel/mariadb/server/build/10.11/mysql-test/var/my.cnf --log-output=file --binlog-format=mixed --log-bin=slave-bin --log-bin=slave-bin --replicate-rewrite-db=test->rewrite "--replicate-rewrite-db=mysqltest1 -> test" "--replicate-rewrite-db=x -> y" --replicate-rewrite-db=database_master_temp_01->database_slave_temp_01 --replicate-rewrite-db=database_master_temp_02->database_slave_temp_02 --replicate-rewrite-db=database_master_temp_03->database_slave_temp_03 --core-file --loose-debug-sync-timeout=300 --loose-debug-gdb --loose-skip-stack-trace < /dev/null
+
+
+THis is in rpl_rewrt_db-slave.opt
+
+"--replicate-rewrite-db=test->rewrite" "--replicate-rewrite-db=mysqltest1 -> test" "--replicate-rewrite-db=x -> y" "--replicate-rewrite-db=database_master_temp_01->database_slave_temp_01" "--replicate-rewrite-db=database_master_temp_02->database_slave_temp_02" "--replicate-rewrite-db=database_master_temp_03->database_slave_temp_03"
+
+==============================================================================
+
+TEST                                      RESULT   TIME (ms) or COMMENT
+--------------------------------------------------------------------------
+
+worker[1] Using MTR_BUILD_THREAD 300, with reserved ports 16000..16019
+rpl.rpl_rewrt_db 'mix'                   [ pass ]   1241
+rpl.rpl_rewrt_db 'row'                   [ skipped ]  Neither MIXED nor STATEMENT binlog format
+rpl.rpl_rewrt_db 'stmt'                  [ pass ]   1235
+--------------------------------------------------------------------------
+The servers were restarted 2 times
+Spent 2.476 of 8 seconds executing testcases
+
+Completed: All 2 tests were successful.
+
+1 tests were skipped, 1 by the test itself.
+
+
+Fix
+
+--replicate-rewrite-db="test->rewrite"
+--replicate-rewrite-db="mysqltest1 -> test"
+--replicate-rewrite-db="x -> y"
+--replicate-rewrite-db="database_master_temp_01->database_slave_temp_01"
+--replicate-rewrite-db="database_master_temp_02->database_slave_temp_02"
+--replicate-rewrite-db="database_master_temp_03->database_slave_temp_03"
+
+
+MY tests
+1
+
++SET @GLOBAL.replicate_rewrite_db="test->rewritemysqltest1->testx->y";
++SELECT @@GLOBAL.replicate_rewrite_db;
+
+
+2
+
+-- source include/have_binlog_format_mixed_or_statement.inc
+-- source include/master-slave.inc
+
+--echo #
+--echo # MDEV-15530 Variable replicate_rewrite_db cannot be found
+--echo #            in "show global variables"
+--echo #
+
+connection slave;
+--error ER_SLAVE_MUST_STOP
+SET @@GLOBAL.replicate_rewrite_db="test_master->test_replica";
+
+connection slave;
+source include/stop_slave.inc;
+SET @save_replicate_rewrite_db = @@GLOBAL.replicate_rewrite_db;
+SELECT @@GLOBAL.replicate_rewrite_db;
+SET @@GLOBAL.replicate_rewrite_db="test_master->test_replica";
+SELECT @@GLOBAL.replicate_rewrite_db;
+source include/start_slave.inc;
+connection master;
+--enable_warnings
+create database test_master;
+sync_slave_with_master;
+show databases;
+
+--echo # Cleanup.
+connection master;
+drop database test_master;
+--source include/rpl_end.inc
+connection slave;
+SET @@GLOBAL.replicate_rewrite_db = @replicate_rewrite_db;
+
+# end of 10.11 tests
+
+
+
+PERL DEBUGGING
+Only for in-source builds (note 2 times log-bin in `get_extra_opts` - test to see where is in `run_worker`)
+
+[pid=66836->66885]  DB<12> T       
+@ = DB::DB called from file './mtr' line 5263
+$ = main::get_extra_opts(ref(My::Config::Group), ref(My::Test)) called from file './mtr' line 2681
+. = main::mysql_server_start(ref(My::Config::Group), ref(My::Test)) called from file './mtr' line 5419
+$ = main::start_servers(ref(My::Test)) called from file './mtr' line 3853
+. = main::run_testcase(ref(My::Test), ref(IO::Socket::INET)) called from file './mtr' line 962
+. = main::run_worker(40313, 1) called from file './mtr' line 475
+. = main::main() called from file './mtr' line 347
+
+
+[pid=66836->66885]  DB<10> x $tinfo
+0  My::Test=HASH(0x55a39fec5618)
+   'combinations' => ARRAY(0x55a39ff2f5b0)
+      0  'mix'
+   'in_overlay' => undef
+   'key' => 'My::Test=HASH(0x55a39fec5588)'
+   'master_opt' => ARRAY(0x55a39febe608)
+      0  '--binlog-format=mixed'
+      1  '--log-bin=master-bin'
+      2  '--log-bin=master-bin'
+   'name' => 'rpl.rpl_rewrt_db'
+   'path' => '/home/anel/mariadb/server/src/10.11-source/mysql-test/suite/rpl/t/rpl_rewrt_db.test'
+   'result_file' => '/home/anel/mariadb/server/src/10.11-source/mysql-test/suite/rpl/r/rpl_rewrt_db.result'
+   'rpl_test' => 1
+   'shortname' => 'rpl_rewrt_db'
+   'slave_opt' => ARRAY(0x55a39fecbf58)
+      0  '--binlog-format=mixed'
+      1  '--log-bin=slave-bin'
+      2  '--log-bin=slave-bin'
