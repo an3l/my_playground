@@ -1,0 +1,73 @@
+This documents purpose is to describe how to do migrations from Oracle or MS-SQL to MariaDB.
+
+The process described aligns 100% how we did migrations at DBS (and will continue to do).
+
+The goals are:
+- The applications should be able to run "unchanged" after moved to MariaDB.
+- Every new migration should be easier than the previous ones.
+
+For Oracle we already have a great base for doing this while for MS-SQL we are just in the beginning (which means that the next MS-SQL migration is going to be harder than the next Oracle migrations until the MS-SQL compatibility catches up).
+
+The steps to do:
+
+Preparation:
+
+1) Download a copy of the latest SQLines: http://www.sqlines.com/download
+   - MariaDB Corporation is working with SQLines to ensure that the MariaDB layer is constantly updated when it comes to the latest MariaDB compatibility features.
+
+2) Run SQLines against the customers schemas and stored procedures.
+   - This can either be done at the customers site, against a dump of schemas and stored procedures provided by the customer or by the customer itself.
+   - This will produce a list of the features that MariaDB doesn't yet support
+
+3) Start migrating those applications for which there was no missing features.
+
+4) Create a Jira entry as a placeholder for all the missing features. Name it something like 'Migration_tokyo', that is easy to remember.
+
+5) Create one Jira sub task for each of the missing features, if the feature request doesn't yet exist in Jira. Link the Jira request to the place holder 'Migration_tokyo'.
+
+6) Connect with MariaDB engineering (Rasmus?) and ask them to have engineers evaluate each task and add a time estimate to them. For complex tasks, there should also be a short architecture description for how to solve the task. This helps ensure that that the time estimate is reasonable accurate.
+
+7) When you get all the time estimates, go back to the customer and use the estimate to decide on a few initial projects to start from. For example one or two easy migrations and a medium hard one. The estimation for the customer should be 2-4 times the developer estimate (as our developers are sometimes a bit too optimistic. In any case, the customer will in the end only paid for the used development hours, up to the 4x.
+
+8) Create a statement of work (SOW) that includes all tasks needed for the chosen projects and have the customer to commit to it.
+
+9) As soon the SOW is approved, MariaDB Corporation will assign developers to the tasks and give the customer an estimate of the delivery time.  The delivery times depends on how quickly we can free developers up from their current tasks. The sooner we get approval, the sooner we can allocate developers!
+
+10) During development, we will update each task in Jira about progress and mark them closed when they are done.
+
+11) When a sub task is closed, it would be of great help if the customer could verify that the task works according to expectations. This would help with the getting the whole project done faster.
+
+12) When all tasks are closed and verified by the customer, it's time to start the real migration.
+
+Note that 1-8) are not paid work!  We need these done anyway to be able to improve MariaDB and even if the customer doesn't buy, all work is reusable and nothing is lost!
+
+
+Migration:
+
+1) Store Oracle table definitions and stored procedures in a text file.
+
+2) Execute them in the MariaDB sql client mysql to create the tables. Don't forget to execute "SET SQL_MODE=ORACLE" first.
+
+3) Move the data from Oracle to MariaDB. This can be done with:
+
+  - CONNECT engine:   INSERT INTO table_in_mariadb SELECT * from table_in_oracle;
+  - Dump data in Oracle in CVS form and load it into MariaDB with either mysqlimport or LOAD DATA INFILE commands.
+
+4) Change the application to use MariaDB connectors instead of Oracle/MS-SQL connectors. MariaDB has connectors for ODBC and JDBC that are very compatible to Oracle/MS-SQL ones.
+
+5) Test the application with MariaDB.  If any errors is found, report them in Jira, wait until these are fixed, update MariaDB to latest version and try again until things work.
+
+6) Set up replication from Oracle to MariaDB. There are several different tools that can be used for this:
+   - Tungsten
+   - (need more names!)
+
+7) Refresh the database with latest data.
+
+8) Run the application with Oracle and MariaDB in parallel to ensure that both work identically.  One can run reports and queries against MariaDB to ensure that all reports works.
+
+9) When satisfied that MariaDB works, switch to use MariaDB as a master (by pointing the applications to MariaDB) and replicate to Oracle as a backup (with the same tool that was used before)
+
+10) When satisfied that MariaDB works, disable replication to Oracle.
+
+11) Enjoy your migrated database!
+
