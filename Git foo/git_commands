@@ -1,2 +1,9 @@
 To change the date:
+```bash
 GIT_COMMITTER_DATE="Wed, 23 Oct 2019 17:40:24 +0500" git commit --amend --no-edit --date "Wed, 23 Oct 2019 17:40:24 +0500"
+```
+
+## Unset option
+```bash
+$ git config --global --unset core.autocrlf
+```
