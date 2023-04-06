@@ -4,8 +4,8 @@
 In this blog we are going to learn how to migrate data from Oracle to MariaDB.
 At the beginning we'll learn basis about the Oracle database and on demo example we'll create some table in Oracle and migrate data to MariaDB.
 To migrate data from Oracle there are 2 ways:
-1. dump Oracle data to CSV and load data in MariaDB
-2. use Connect SE to create or insert into a table from Oracle's source definition 
+1. dump Oracle data to CSV and load data in MariaDB,
+2. use Connect SE to create or insert into a table from Oracle's source definition. 
 
 For demonstration, we are going to use docker container with Oracle Express Edition (XE) image.
 On the same container MariaDB instance will be started and data migration will happen.
@@ -45,7 +45,7 @@ but is hosted within the context of the container database.
 
 
 # Oracle source data
-- At the first attempt, I tried to use images for my [oracle registry](https://container-registry.oracle.com/), but after days of trying I couldn't make ODBC connector
+- At the first attempt, I tried to use images from [oracle registry](https://container-registry.oracle.com/), but after days of trying I couldn't make ODBC connector
 work on AMD platform.
 - Second attempt was to use Oracle's [docker-images](https://github.com/oracle/docker-images.git) repository and I used
 ```bash
@@ -136,6 +136,11 @@ Completed: ALTER PLUGGABLE DATABASE XEPDB1 SAVE STATE
 $ docker ps
 CONTAINER ID   IMAGE                       COMMAND                  CREATED       STATUS                 PORTS                                                                                  NAMES
 7f2f6dd37f01   oracle/database:18.4.0-xe   "/bin/sh -c 'exec $O…"   2 hours ago   Up 2 hours (healthy)   0.0.0.0:1521->1521/tcp, :::1521->1521/tcp, 0.0.0.0:5500->5500/tcp, :::5500->5500/tcp   oracle18xe
+
+$ docker ps --format "table {{.Status}}"
+STATUS
+Up About an hour (healthy)
+
 ```
 
 - More about see [1- Oracle running container](https://github.com/oracle/docker-images/tree/main/OracleDatabase/SingleInstance#running-oracle-database-21c18c-express-edition-in-a-container)
@@ -495,24 +500,29 @@ MariaDB-connect-engine-10.3.38-1.el7.centos.x86_64
 $ ls /usr/lib64/mysql/plugin/|grep connect
 ha_connect.so
 
-
 # Check
 bash-4.2# ls /usr/lib64/mysql/plugin/|grep connect
 ha_connect.so
 ```
 
 ## Setup OracleODBC driver
-Make sure that we have ODBC driver manager installed
+- To create ODBC connection we need `unixODBC`driver that is dependency on `mariadb-connect`,
+  so it is installed already
 ```bash
-$ rpm -q -a|grep -e ODBC
-unixODBC-2.3.1-14.0.1.el7.x86_6
+rpm -q -a|grep -e ODBC
+unixODBC-2.3.1-14.0.1.el7.x86_64
 ```
-We will used Oracle's ODBC driver `libsqora.so` shared library and to use it we need to export to environment `LD_LIBRARY_PATH`
+`unixODBC` has utilites like `isql`(CLI SQL tool)  and `odbcinst` (CLI for ODBC configuration) that we are going to use later.
+- After installing the driver manager, we need to connect to Oracle's database,
+  using Oracle's ODBC driver.
+- For that, ODBC driver `libsqora.so` shared library is used and we need to export the path to the environment `LD_LIBRARY_PATH`
 ```bash
 # Export LD_LIBRARY_PATH
-export LD_LIBRARY_PATH=/opt/oracle/product/18c/dbhomeXE/lib/
+export LD_LIBRARY_PATH=$ORACLE_HOME/lib/
 ```
-- Write `odbcinst.ini` file (there are already connection settings for MySQL and PostgreSQL)
+- Set unixODBC driver, by writing `odbcinst.ini` file
+  There are already connection unixODBC driver settings for MySQL and PostgreSQL,
+  we need to update to use `OracleODBC` configuration
 ```bash
 bash-4.2# cat /etc/odbcinst.ini 
 ...
@@ -521,7 +531,7 @@ Description    = ODBC for Oracle
 Driver         = /opt/oracle/product/18c/dbhomeXE/lib/libsqora.so.18.1
 ```
 
-- Check
+- Check the changes
 ```bash
 bash-4.2# vim /etc/odbcinst.ini 
 bash-4.2# odbcinst -q -d
@@ -531,17 +541,14 @@ bash-4.2# odbcinst -q -d
 ```
 
 ## Setup ODBC data source name
+- We need to add configuration to access the Oracle database
+  using above step in `~/.odbc.ini` just like we have connected to the Oracle.
 ```bash
-$ ln -s /opt/oracle/product/18c/dbhomeXE/lib/libsqora.so.18.1 /opt/oracle/product/18c/dbhomeXE/lib/libsqora
-
-# Export LD_LIBRARY_PATH
-export LD_LIBRARY_PATH=/opt/oracle/product/18c/dbhomeXE/lib/
-
 # Note it didn't work when XE was used with system
 bash-4.2# cat ~/.odbc.ini 
 [oracle]
 Driver = OracleODBC
-DSN = OracleODBC
+DSN = Oracle ODBC connection
 ServerName = XEPDB1
 UserID = system
 Password = oracle
@@ -550,6 +557,7 @@ bash-4.2# odbcinst -q -s
 [oracle]
 ```
 ## Check connection
+- To check connection we may use `isql` utility
 ```bash
 bash-4.2# isql -v oracle
 +---------------------------------------+
@@ -574,29 +582,32 @@ SQLRowCount returns -1
 
 
 ## Start mysqld
+- Start mariadb server and load Connect SE on startupe
 ```bash
-mysqld --user=root --plugin-load-add=ha_connect.so &
+$ mariadbd --user=root --plugin-load-add=ha_connect.so &
 2023-01-16 16:03:23 0 [Note] mysqld (mysqld 10.3.37-MariaDB) starting as process 3181 ...
 2023-01-16 16:03:23 0 [Note] CONNECT: Version 1.07.0003 June 06, 2021
 
 Version: '10.3.37-MariaDB'  socket: '/var/lib/mysql/mysql.sock'  port: 3306  MariaDB Server
 ```
 ### Check plugin
+- Connect with the client 
 ```bash
-$ mysql -uroot
-show plugins
-
+$ mariadb -uroot -e "show plugins;"
+---
 | CONNECT                       | ACTIVE   | STORAGE ENGINE     | ha_connect.so | GPL     |
 +-------------------------------+----------+--------------------+---------------+---------+
 54 rows in set (0.001 sec)
 
 ```
 ### Create table on mariadb
+- Create table using Connect SE by using ODBC connection to Oracle database with DSN that's set in previous step and select all data from table.
 ```bash
-MariaDB [test]> create table migrate_table engine=connect table_type=ODBC tabname='t' Connection='DSN=oracle' SRCDEF='select * from t';
+$ mariadb -uroot test
+MariaDB [test]> create table table_maria engine=connect table_type=ODBC tabname='t' Connection='DSN=oracle' SRCDEF='select * from t';
 Query OK, 0 rows affected (0.059 sec)
 
-MariaDB [test]> select * from migrate_table;
+MariaDB [test]> select * from table_maria;
 +------+
 | T    |
 +------+
@@ -606,20 +617,10 @@ MariaDB [test]> select * from migrate_table;
 +------+
 3 rows in set (0.052 sec)
 
-MariaDB [test]> select * from migrate_table;
-+------+
-| T    |
-+------+
-|    1 |
-|    2 |
-|    3 |
-+------+
-3 rows in set (0.052 sec)
-
-MariaDB [test]> show create table migrate_table \G
+MariaDB [test]> show create table table_maria \G
 *************************** 1. row ***************************
-       Table: migrate_table
-Create Table: CREATE TABLE `migrate_table` (
+       Table: table_maria
+Create Table: CREATE TABLE `table_maria` (
   `T` double(40,0) DEFAULT NULL
 ) ENGINE=CONNECT DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci CONNECTION='DSN=oracle' `TABLE_TYPE`='ODBC' `TABNAME`='t' `SRCDEF`='select * from t'
 1 row in set (0.000 sec)
