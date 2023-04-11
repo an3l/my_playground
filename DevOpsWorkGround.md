@@ -141,10 +141,64 @@ ERROR: 2 error(s) decoding:
 ```
 
 
+## Check docker compose config
+```
+$ docker compose config <db>
+```
+## MR for Downloads
+This MR is based on top of MR#18
+- Add bake file https://docs.docker.com/build/bake/file-definition/
+  in order to include 2 groups that run single target `web` app
+Dockerfile
+  - `default` group
+    - Used to build/pull the image that is in production
+    - Invocations:
+      - Build image: `$ docker buildx bake # runs defaults group`
+      - Push the image: `$ docker buildx bake --push`
+        The last command fails because missing private repository on
+        docker.hub
+        ```bash
+         => ERROR pushing docker.io/mdbf/mdbf_downloads:latest with docker
+        ```
+    - This image is used in production `docker-compose.yml` file, that
+    is accordingly updated per PR #18
+
+  - `local` group
+    - Used to build only the local image that will be used for
+    developers and in testing
+    - Invocation:
+      - Build the image: `$docker buildx bake local`
+      - Alternative command: `$ docker buildx bake -f docker-bake.hcl local`
+      - It is related to `docker-compose-local.yml` file
+
+  - Example of generated images for "default" and "local" groups:
+    ```bash
+    $ docker images
+      REPOSITORY                                          TAG         IMAGE ID       CREATED        SIZE
+      mdbf_downloads                                      local       fe8783c9ff69   3 hours ago    1.49GB
+      mdbf/mdbf_downloads                                 latest      fe8783c9ff69   3 hours ago    1.49GB
+    ```
+  - In both cases one can run `docker compose -f
+  docker-compose[-local].yml up` that will use image and start
+  containers
+
+  - Note that one can specify multiple platforms `platforms = ["linux/amd64"]`,
+    but it is related to Docker desktop
+  - To check builder configuration run `docker buildx ls`
+  ```bash
+  $ docker buildx ls
+    NAME/NODE DRIVER/ENDPOINT STATUS  BUILDKIT PLATFORMS
+    default * docker
+    default default         running 23.0.3   linux/amd64, linux/amd64/v2, linux/amd64/v3, linux/386
+  ```
+  
+ # Other
+```
 Below command doesn't work correctly
 ```bash
 $ docker buildx build --platform linux/amd64,linux/arm64 \
   --file Dockerfile \
   --tag docker_web:patch \
   .
+
 ```
