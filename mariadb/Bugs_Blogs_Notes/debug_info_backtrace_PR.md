@@ -210,7 +210,7 @@ ii  binutils-x86-64-linux-gnu                    2.34-6ubuntu1.4                
 ii  libbinutils:amd64                            2.34-6ubuntu1.4                      amd64        GNU binary utilities (private shared library)
 ```
 based on [this](https://bugs.launchpad.net/ubuntu/+source/binutils/+bug/1977958) it should be temporary fix.
-- However 22.04 fixes by increasing size 10x in `binutils 2.38`, but is not added backport.
+- However 22.04 fixes by increasing size 10x in `binutils 2.38`, but is not added backport, check [this SO](https://stackoverflow.com/questions/71410361/what-to-do-with-dwarf-error-section-debug-info-is-larger-than-its-filesize)
 ### Test binutils 2.34.6
 
 
