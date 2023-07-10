@@ -127,6 +127,19 @@ MariaDB [test]> select * from vips v right join guests g on v.name=g.name;
 |   NULL | NULL   |        5 | g3     |
 +--------+--------+----------+--------+
 5 rows in set (0.001 sec)
+
+MariaDB [test]>  select * from vips v right join guests g using(name);
++--------+----------+--------+
+| name   | guest_id | vip_id |
++--------+----------+--------+
+| anel   |        2 |      1 |
+| melisa |        4 |      2 |
+| g1     |        1 |   NULL |
+| g2     |        3 |   NULL |
+| g3     |        5 |   NULL |
++--------+----------+--------+
+5 rows in set (0.001 sec)
+
 */
 
 
