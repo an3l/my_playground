@@ -1,0 +1,28 @@
+-Using gdb a guide to the gnu source-level debugger pdf
+- info gdb
+- Examing the memmory: x command plus pointer of variable
+  x/nfu address # n->number of units (unit = b, h, w) byte halfword word, f format
+  x &t
+
+
+Writing the scripts in gdb to automate some of our repetitive tasks:
+https://www.youtube.com/watch?v=gYMvCSCfr38&list=PL9IEJIKnBJjHGWPN_S9NS_Ky1-tC8ZrUI&index=3
+start gdb with scriptfile
+  gdb ./test -x init.gdb
+
+Assertions
+Conditional breakpoints in gdb (stop if condition is 
+satisfied)
+  break code.c:45 if (x > 2)
+
+Debug fork() and exec()
+  Gdb can follow just one process at the time (parent, child)
+    set follow-fork-mode child # or parent
+  Exec is replacing the current process
+    set follow-exec-mode new # or same
+https://www.youtube.com/watch?v=2YfM-HxQd_8
+main.c -> preprocessor (temp.c) (-E)
+temp.c -> compiler (proc.S) (-c)
+proc.S -> assembler (main.o) (-S)
+main.o -> linker (a.out)
+Automatic variables in Makefile
