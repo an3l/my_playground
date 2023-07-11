@@ -1,0 +1,4 @@
+[mariadb]
+plugin_load_add=ha_connect.so
+connect_jvm_path=/usr/lib/jvm/java-11-openjdk-amd64/lib/server/
+connect_class_path=/build/storage/connect/connect_jars/JdbcInterface.jar:/usr/share/java/mariadb-java-client.jar:/usr/share/java/ojdbc11.jar

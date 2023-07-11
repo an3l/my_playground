@@ -124,7 +124,7 @@ Call Stack (most recent call first):
 
 
 
-Additionally this changed
+Additionally this changed (it was `optional`)
 ```
 -- The following REQUIRED packages have been found:
 
@@ -163,7 +163,7 @@ b5edb4ca3a39 (Otto Kekäläinen 2018-01-12 16:56:55 +0000   8) usr/lib/mysql/plu
 
 - Problems:
 1. javaconn.cpp is appending JavaWrappers.jar that is precompiled from /share directory
-
+2. Test cases - always were disabled
 
 Patch:
 - Created .jar file
@@ -175,6 +175,42 @@ Note that it is not created with `make connect` (empty `jarFiles` directory),
 but when is run `make` it works (because it is not part of `connect` target.
 Not sure how is created (`ha_connect.so` - `connect` target, it should be part of `cmake/plugin.cmake`))
 
+- A) Testing patch (change image to quay.io) todo
+- B) Testing patch (cannot kill root process 1 (mariadbd) from within container):
+1. Start docker-compose.yaml.
+2. Use `/build/` as volume for new binaries
+3. Check `/build/`
+```bash
+# There is a jar file
+ /build/storage/connect/connect_jars/JdbcInterface.jar
+```
+4. Configure
+In `target_conf` make change and add `plugin_dir`(instead of default /usr/lib/plugin/)
+```bash 
+plugin_dir=/build/storage/connect
+# connect_class_path=/usr/share/mysql/mysql-test/plugin/connect/connect/std_data/JavaWrappers.jar:/usr/share/java/mariadb-java-client.jar
+connect_class_path=/build/storage/connect/connect_jars/JdbcInterface.jar:/usr/share/java/mariadb-java-client.jar
+```
+In running container change above with `/etc/mysql/conf.d/`
+5. Remove `mariadb-server` (`mariadb-plugin-connect` will be removed with it),
+   Remove `mariadb-test-data` and start the server from binary
+```bash
+# libssl-dev didn't work
+$ wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.18_amd64.deb
+$ dpkg -i libssl1.1_1.1.1f-1ubuntu2.18_amd64.deb 
+# Needed libnuma-dev (see at end)
+$ apt-get install build-essential libncurses5-dev gnutls-dev bison zlib1g-dev ccache libnuma-dev 
+$ cd build/
+$ ./sql/mariadbd -uroot
+# $ ./sql/mariadbd
+#./sql/mariadbd: error while loading shared libraries: libnuma.so.1: cannot open shared object file: No such file or directory
+
+```
+6. `docker restart mariadb-target`
+7. Validate
+```bash
+
+```
 - Debian:
 Since `debian/mariadb-test-data.install` is using `usr/share/mysql/mysql-test/std_data` that is no more visible,
 it will not be anymore there, however we need to create new package for Jdbcinterface
@@ -194,4 +230,52 @@ it will not be anymore there, however we need to create new package for Jdbcinte
 - Got an error when using .sql with JDBC connection url on localhost script during startup:
 ```
 mariadb-target  | ERROR 1105 (HY000) at line 6: Connecting: java.sql.SQLNonTransientConnectionException: Could not connect to address=(host=localhost)(port=3306)(type=master) : Socket fail to connect to host:localhost, port:3306. Connection refused (Connection refused) rc=-2
+```
+
+- Testing debian
+Created files:
+```
+mariadb-plugin-connect-jdbc_11.2.0+maria~ubu2004_amd64.deb 
+mariadb-plugin-columnstore_11.2.0-6.4.7+maria~ubu2004_amd64.deb        
+mariadb-plugin-columnstore-dbgsym_11.2.0-6.4.7+maria~ubu2004_amd64.ddeb
+```
+- Inspected content
+```
+$ dpkg -x mariadb-plugin-connect-jdbc_11.2.0+maria~ubu2004_amd64.deb ./anel
+$ tree anel
+$ tree anel/
+anel/
+└── usr
+    └── share
+        ├── doc
+        │   └── mariadb-plugin-connect-jdbc
+        │       ├── changelog.gz
+        │       └── copyright
+        └── mariadb
+            └── JdbcInterface.jar
+
+5 directories, 3 files
+```
+```
+   dh_installdirs -O--parallel -O--fail-missing
+	install -d debian/mariadb-backup
+	install -d debian/mariadb-plugin-connect
+	install -d debian/mariadb-plugin-connect-jdbc
+	install -d debian/mariadb-plugin-s3
+cd builddir && /usr/bin/make install DESTDIR=/home/anel/GitHub/mariadb/server/src/connect-java/debian/tmp > /dev/null
+make[4]: Circular libmariadb/libmariadb/libmariadb.a <- libmariadb/libmariadb/libmariadb.a dependency dropped.
+CMake Error at storage/connect/cmake_install.cmake:78 (file):
+  file INSTALL cannot find
+  "/home/anel/GitHub/mariadb/server/src/connect-java/builddir/storage/connect/connect_jars/JdbcInterface.jar/JdbcInterface.jar":
+  Not a directory.
+Call Stack (most recent call first):
+  cmake_install.cmake:85 (include)
+
+
+make[2]: *** [Makefile:133: install] Error 1
+make[1]: *** [debian/rules:152: override_dh_auto_install] Error 2
+make[1]: Leaving directory '/home/anel/GitHub/mariadb/server/src/connect-java'
+make: *** [debian/rules:218: binary] Error 2
+dpkg-buildpackage: error: debian/rules binary subprocess returned exit status 2
+
 ```
