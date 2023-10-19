@@ -1,0 +1,180 @@
+
+
+for timestamp and so on
+ %prec PREC_BELOW_CONTRACTION_TOKEN2
+ 
+ 
+field_list_item:
+          column_def { }
+        | key_def
+        | constraint_def
+        | period_for_system_time
+        | PERIOD_SYM period_for_application_time { }
+        ;
+ 
+ 
+column_def:
+          field_spec   ->keywor_identifier (npr. a int)
+          { $$= $1; }
+        | field_spec opt_constraint references -> keyword_identifier constraint references (ovo nas ne interesuje)
+        
+  
+field_spec:
+	field_type_or_serial opt_check_constraint
+		  {
+		    LEX *lex=Lex;
+		    lex->parsing_options.lookup_keywords_after_qualifier= false;
+		    $$= $<create_field>2;
+
+		    $$->check_constraint= $4;
+
+		    if (unlikely($$->check(thd)))
+		      MYSQL_YYABORT;
+
+		    lex->alter_info.create_list.push_back($$, thd->mem_root);
+
+		    $$->create_if_not_exists= Lex->check_exists;
+		    if ($$->flags & PRI_KEY_FLAG)
+		      lex->add_key_to_list(&$1, Key::PRIMARY, lex->check_exists);
+		    else if ($$->flags & UNIQUE_KEY_FLAG)
+		      lex->add_key_to_list(&$1, Key::UNIQUE, lex->check_exists);
+		  }  
+
+:opt_check_constraint:
+          /* empty */      { $$= (Virtual_column_info*) 0; } %prec PREC_BELOW_IDENTIFIER_OPT_SPECIAL_CASE
+        | opt_constraint check_constraint
+          {
+            $$= $2;
+            Lex->add_constraint($1, $2, FALSE);
+          }
+        ;
+        
+constraint_def:
+         opt_constraint check_constraint
+         {
+           Lex->add_constraint($1, $2, FALSE);
+         }
+       ;    
+opt_constraint:
+          /* empty */ { $$= null_clex_str; }
+        | constraint { $$= $1; }
+        ;
+
+constraint:
+          CONSTRAINT opt_ident { $$=$2; }
+        ;    
+    
+    
+check_constraint:
+          CHECK_SYM '(' expr ')'
+          {
+            Virtual_column_info *v= add_virtual_expression(thd, $3);
+            if (unlikely(!v))
+              MYSQL_YYABORT;
+            $$= v;
+          }
+
+field_type_or_serial:
+          qualified_field_type
+          {
+             Lex->last_field->set_attributes(thd, $1, Lex->charset,
+                                             COLUMN_DEFINITION_TABLE_FIELD);
+          }
+          field_def
+        | SERIAL_SYM
+          {
+            Lex->last_field->set_handler(&type_handler_ulonglong);
+            Lex->last_field->flags|= AUTO_INCREMENT_FLAG | NOT_NULL_FLAG
+                                     | UNSIGNED_FLAG | UNIQUE_KEY_FLAG;
+            Lex->alter_info.flags|= ALTER_ADD_INDEX;
+          }
+          opt_serial_attribute
+        ;
+        
+Bug in documentaiton - constraint definition missing  
+
+https://mariadb.com/kb/en/create-table/#column-definitions    
+
+ | - meaning?
+
+We have this:
+create table t1 (a int check(a>0) ,b int check (b> 0), constraint abc check (a>b));
+
+WE WANT THIS
+create table t1 (a int *CONSTRAINT c1* check(a>0) ,b int *CONSTRAINT c2* check (b> 0), constraint abc check (a>b));
+
+CREATE [OR REPLACE] [TEMPORARY] TABLE [IF NOT EXISTS] tbl_name
+    (create_definition,...) [table_options    ]... [partition_options]
+
+create_definition:
+  { col_name column_definition | index_definition | period_definition | CHECK (expr) }
+
+ANEL: column_definition:data_type column_options [constraint_definition]   [reference_definition] 
+column_definition:
+  data_type
+    [NOT NULL | NULL] [DEFAULT default_value | (expression)]
+    [ON UPDATE [NOW | CURRENT_TIMESTAMP] [(precision)]]
+    [AUTO_INCREMENT] [ZEROFILL] [UNIQUE [KEY] | [PRIMARY] KEY]
+    [INVISIBLE] [{WITH|WITHOUT} SYSTEM VERSIONING]
+    [COMMENT 'string'] [REF_SYSTEM_ID = value]
+    [reference_definition]
+  | data_type [GENERATED ALWAYS] 
+  AS { { ROW {START|END} } | { (expression) [VIRTUAL | PERSISTENT | STORED] } }
+      [UNIQUE [KEY]] [COMMENT 'string']
+
+
+constraint_definition:
+   CONSTRAINT [constraint_name] CHECK (expression)
+
+
+TODO
+
+We have this:
+create table t1 (a int check(a>0) ,b int check (b> 0), constraint abc check (a>b));
+
+++++++++++++++ WE WANT THIS  +++++++++++++++++++++
+create table t1 (a int check(a>0) ,b int check (b> 0), constraint abc check (a>b));
+CREATE [OR REPLACE] [TEMPORARY] TABLE [IF NOT EXISTS] tbl_name
+
+ <column constraint definition> ::=
+[ <constraint name definition> ] <column constraint> [ <constraint characteristics> ]
+<column constraint> ::=
+...
+| <check constraint definition>
+ 
+<constraint name definition> ::=
+CONSTRAINT <constraint name>
+ 
+<check constraint definition> ::=
+CHECK <left paren> <search condition> <right paren>
+
+
+
+
+
+The problem here is in the following part of the grammar:
+
+opt_check_constraint: /* empty */ | opt_constraint check_constraint ;
+ 
+field_spec: field_ident field_type_or_serial opt_check_constraint ;
+ 
+column_def: field_spec | field_spec opt_constraint references ;
+
+
+So when the parser sees the token CONSTRAINT after the field type,
+it does not know whether it's part of 
+- opt_check_constraint or 
+- already opt_constraint references
+
+No %prec will be able to fix it.
+You have to rewrite the grammar to avoid the conflict.
+
+
+CONSTRAINT can be  followed by non-empty identifier in field_spec
+
+
+check_constraint rule called by:
+* check_constraint <-constraint_def, opt_check_constraint, alter_list_item (ADD CONSTRAINT | DROP CONSTRAINT )
+opt_check_constraint rule called by:
+* opt_check_constraint - > has empty or check_constraint  <- field_spec (Here we need to change)
+

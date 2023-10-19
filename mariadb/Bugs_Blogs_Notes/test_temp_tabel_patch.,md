@@ -1,0 +1,68 @@
+	modified:   mysql-test/main/create.result
+	modified:   mysql-test/main/create_or_replace.result
+	modified:   mysql-test/main/drop.result
+	modified:   mysql-test/main/flush.result
+	modified:   mysql-test/main/grant.result
+	modified:   mysql-test/main/grant5.result
+	modified:   mysql-test/main/grant5.test
+	modified:   mysql-test/main/information_schema_db.result
+	modified:   mysql-test/main/information_schema_db.test
+	modified:   mysql-test/main/lock.result
+	modified:   mysql-test/main/lock_multi.result
+	modified:   mysql-test/main/merge.result
+	modified:   mysql-test/main/ps_ddl.result
+	modified:   mysql-test/main/query_cache.result
+	modified:   mysql-test/main/read_only.result
+	modified:   mysql-test/main/read_only_innodb.result
+	modified:   mysql-test/main/rename.result
+	modified:   mysql-test/main/reopen_temp_table.result
+	modified:   mysql-test/main/sp-anchor-row-type-cursor.result
+	modified:   mysql-test/main/sp-anchor-row-type-table.result
+	modified:   mysql-test/main/sp-anchor-type.result
+	modified:   mysql-test/main/sp.result
+	modified:   mysql-test/main/temp_table.result
+	modified:   mysql-test/main/trigger.result
+	modified:   mysql-test/main/union.result
+	modified:   mysql-test/main/view.result
+	modified:   mysql-test/suite/compat/oracle/r/sp-cursor-rowtype.result
+	modified:   mysql-test/suite/compat/oracle/r/sp-row.result
+	modified:   mysql-test/suite/compat/oracle/r/sp.result
+	modified:   mysql-test/suite/engines/funcs/r/rpl_row_drop.result
+	modified:   mysql-test/suite/funcs_1/r/innodb_views.result
+	modified:   mysql-test/suite/funcs_1/r/is_tables.result
+	modified:   mysql-test/suite/funcs_1/r/is_tables_embedded.result
+	modified:   mysql-test/suite/funcs_1/r/memory_views.result
+	modified:   mysql-test/suite/funcs_1/r/myisam_views-big.result
+	modified:   mysql-test/suite/galera/r/galera_truncate_temporary.result
+	modified:   mysql-test/suite/gcol/r/innodb_virtual_fk_restart.result
+	modified:   mysql-test/suite/handler/interface.result
+	modified:   mysql-test/suite/maria/temporary.result
+	modified:   mysql-test/suite/plugins/r/audit_null.result
+	modified:   mysql-test/suite/rpl/r/rename.result
+	modified:   mysql-test/suite/rpl/r/rpl_parallel_optimistic.result
+	modified:   mysql-test/suite/rpl/r/rpl_row_drop.result
+	modified:   mysql-test/suite/sql_sequence/create.result
+	modified:   mysql-test/suite/sql_sequence/other.result
+	modified:   mysql-test/suite/sysschema/r/pr_create_synonym_db.result
+	modified:   mysql-test/suite/sysschema/r/pr_table_exists.result
+	modified:   mysql-test/suite/sysschema/t/pr_table_exists.test
+	modified:   mysql-test/suite/versioning/r/alter.result
+	
+	
+	
+	compat/oracle.sp-cursor-rowtype, compat/oracle.sp-cursor-rowtype,compat/oracle.sp-row, compat/oracle.sp,compat/oracle.rpl_row_drop
+	funcs_1.innodb_views, funcs_1.is_tables, funcs_1.is_tables_embedded, funcs_1.memory_views, funcs_1.myisam_views-big
+	
+	
+	
+	./mtr --suite=main,funcs_1,engines,rpl,compat/oracle
+	
+	"main-, archive-, binlog-, binlog_encryption-, csv-, compat/oracle-, encryption-, federated-, funcs_1-, funcs_2-, gcol-, handler-, heap-, innodb-, innodb_fts-, innodb_gis-, innodb_zip-, json-, maria-, mariabackup-, multi_source-, optimizer_unfixed_bugs-, parts-, perfschema-, plugins-, roles-, rpl-, sys_vars-, sql_sequence-, unit-, vcol-, versioning-,period-".
+	
+./mysql-test/mtr --parallel=auto --mem --record     main.func_like main.func_json main.fulltext3 main.func_equal main.func_des_encrypt main.func_date_add main.gis-loaddata main.frm_bad_row_type-7333 main.func_math main.func_regexp_pcre_debug main.func_compress main.func_isnull main.func_in main.func_regexp main.fulltext_var main.func_json_notembedded main.fulltext main.func_test main.gis-debug main.flush_ssl main.gis-rt-precise main.gcc296 main.func_encrypt_nossl main.func_system main.func_if main.func_group main.func_regexp_pcre main.func_encrypt_ucs2 main.fulltext2 main.gis-rtree main.fulltext_derived_4257 main.func_default main.fulltext_multi main.func_set main.fulltext_distinct main.function_defaults_notembedded main.func_weight_string main.frm-debug main.func_sapdb main.func_time main.fulltext_order_by main.function_defaults main.func_crypt main.func_format main.func_debug main.flush_table main.func_int main.fulltext_derived_4316 main.gis-json main.func_time_hires main.func_timestamp main.func_concat main.fulltext_charsets main.func_op main.gis_notembedded main.func_bit main.fulltext_cache main.fulltext_update main.func_digest main.grant5 main.fulltext_left_join main.func_hybrid_type main.func_sformat main.func_time_round main.func_extract main.gis-precise main.gis
+Logging: /home/anel/GitHub/mariadb/server/src/11.2/mysql-test/mariadb-test-run.pl  --parallel=auto --mem --record main.func_like main.func_json main.fulltext3 main.func_equal main.func_des_encrypt main.func_date_add main.gis-loaddata main.frm_bad_row_type-7333 main.func_math main.func_regexp_pcre_debug main.func_compress main.func_isnull main.func_in main.func_regexp main.fulltext_var main.func_json_notembedded main.fulltext main.func_test main.gis-debug main.flush_ssl main.gis-rt-precise main.gcc296 main.func_encrypt_nossl main.func_system main.func_if main.func_group main.func_regexp_pcre main.func_encrypt_ucs2 main.fulltext2 main.gis-rtree main.fulltext_derived_4257 main.func_default main.fulltext_multi main.func_set main.fulltext_distinct main.function_defaults_notembedded main.func_weight_string main.frm-debug main.func_sapdb main.func_time main.fulltext_order_by main.function_defaults main.func_crypt main.func_format main.func_debug main.flush_table main.func_int main.fulltext_derived_4316 main.gis-json main.func_time_hires main.func_timestamp main.func_concat main.fulltext_charsets main.func_op main.gis_notembedded main.func_bit main.fulltext_cache main.fulltext_update main.func_digest main.grant5 main.fulltext_left_join main.func_hybrid_type main.func_sformat main.func_time_round main.func_extract main.gis-precise main.gis
+
+
+# report slave progress to the master
+main.grant_master_admin rpl_fail_register rpl_mixed_ddl_dml rpl_show_slave_hosts
+

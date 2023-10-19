@@ -86,7 +86,9 @@
 
         'Notes
         note top of rplinit
-        Set topology 1->2
+        Set topology 1->2.
+        rpl_server_count is not set, but maximum number from topology is used
+        as a count.
         end note
         note bottom of rplinit
         For function check `rpl_init` diagram
