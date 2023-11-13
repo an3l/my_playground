@@ -1,0 +1,153 @@
+$ touch my_file
+$ mkfs.ext4 -O casefold my_file 
+mke2fs 1.45.5 (07-Jan-2020)
+mkfs.ext4: Device size reported to be zero.  Invalid partition specified, or
+	partition table wasn't reread after running fdisk, due to
+	a modified partition being busy and in use.  You may need to reboot
+	to re-read your partition table.
+
+$ dumpe2fs -h my_file 
+dumpe2fs 1.45.5 (07-Jan-2020)
+dumpe2fs: Attempt to read block from filesystem resulted in short read while trying to open my_file
+Couldn't find valid filesystem superblock.
+
+$ sudo mount my_file -o loop test/
+[sudo] password for anel: 
+mount: /home/anel/mariadb/test: wrong fs type, bad option, bad superblock on /dev/loop14, missing codepage or helper program, or other err
+
+
+$ mkfs.ext4 -O casefold my_file 1000
+mke2fs 1.45.5 (07-Jan-2020)
+
+Filesystem too small for a journal
+Creating filesystem with 250 4k blocks and 128 inodes
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Writing superblocks and filesystem accounting information: done
+
+$ dumpe2fs -h my_file |grep "Filesystem feature"
+dumpe2fs 1.45.5 (07-Jan-2020)
+Filesystem features:      ext_attr resize_inode dir_index filetype extent 64bit flex_bg casefold sparse_super large_file huge_file dir_nlink extra_isize metadata_csum
+
+$ sudo mount my_file -o loop test/
+$ df -h|grep test
+/dev/loop14                968K   24K  876K   3% /home/anel/mariadb/test
+
+
+
+$ mkfs.ext4 -Lci_fs_anel -cv -O casefold my_file 30000000
+mke2fs 1.45.5 (07-Jan-2020)
+my_file contains a ext4 file system
+	last mounted on Thu Aug  4 15:52:47 2022
+Proceed anyway? (y,N) y
+Discarding device blocks: done                            
+Creating filesystem with 262144 4k blocks and 65536 inodes
+Filesystem UUID: 32d6f4d5-8088-4e86-9e34-c723bc84a5ca
+Superblock backups stored on blocks: 
+	32768, 98304, 163840, 229376
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (8192 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+$ sudo mount my_file test2/
+mount: test2/: /home/anel/mariadb/my_file is already mounted.
+
+$ df -h|grep test
+/dev/loop14                968K   24K  876K   3% /home/anel/mariadb/test
+
+Configuration 
+cat /etc/mke2fs.conf
+
+
+$ dd if=/dev/zero of=my_file bs=1M count=1000
+1000+0 records in
+1000+0 records out
+1048576000 bytes (1.0 GB, 1000 MiB) copied, 0.513462 s, 2.0 GB/s
+
+$ mkfs.ext4 -Lci_fs_anel -cv -O casefold my_file
+mke2fs 1.45.5 (07-Jan-2020)
+fs_types for mke2fs.conf resolution: 'ext4'
+Discarding device blocks: done                            
+Discard succeeded and will return 0s - skipping inode table wipe
+Filesystem label=ci_fs_anel
+OS type: Linux
+Block size=4096 (log=2)
+Fragment size=4096 (log=2)
+Stride=0 blocks, Stripe width=0 blocks
+64000 inodes, 256000 blocks
+12800 blocks (5.00%) reserved for the super user
+First data block=0
+Maximum filesystem blocks=262144000
+8 block groups
+32768 blocks per group, 32768 fragments per group
+8000 inodes per group
+Filesystem UUID: 89214c3c-b155-43d8-aa7e-3c1d90e59cc8
+Superblock backups stored on blocks: 
+	32768, 98304, 163840, 229376
+
+Running command: badblocks -b 4096 -X -s my_file 255999
+Checking for bad blocks (read-only test): done                                                 
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (4096 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+
+$ dumpe2fs -h my_file |grep "Filesystem features"
+dumpe2fs 1.45.5 (07-Jan-2020)
+Filesystem features:      has_journal ext_attr resize_inode dir_index filetype extent 64bit flex_bg casefold sparse_super large_file huge_file dir_nlink extra_isize metadata_csum
+
+$ sudo mount my_file test/
+$ df -h|grep test
+/dev/loop14                966M   24K  900M   1% /home/anel/mariadb/test
+
+$ sudo ln -s ~/mariadb/server/build/10.3/mysql-test/var/ ./test/
+
+
+Crate case-insensitive directory
+$ mkdir CI_dir
+$ chattr +F CI_dir/
+# e means ext format
+$ lsattr .
+--------------e----- ./lost+found
+lsattr: Operation not supported While reading flags on ./var
+--------------e-F--- ./CI_dir
+
+# Remove from CI_dir and change back to  chattr -F CI_dir/
+
+$ cd CI_dir
+$ ln -s /home/anel/mariadb/server/build/10.3/mysql-test/var/
+$ ls -la|grep var
+lrwxrwxrwx 1 anel anel   52 Aug  4 16:48 var -> /home/anel/mariadb/server/build/10.3/mysql-test/var/
+
+
+---------- Works ------------
+$ dd if=/dev/zero of=my_file bs=1M count=1000
+$ mkfs.ext4 -Lci_fs_anel -cv -O casefold my_file
+$ dumpe2fs -h my_file |grep "Filesystem features"
+dumpe2fs 1.45.5 (07-Jan-2020)
+Filesystem features:      has_journal ext_attr resize_inode dir_index filetype extent 64bit flex_bg casefold sparse_super large_file huge_file dir_nlink extra_isize metadata_csum
+
+$ sudo mount my_file test/
+$ df -h|grep test
+/dev/loop14                966M   24K  900M   1% /home/anel/mariadb/test
+
+$ mkdir CI_dir
+$ chattr +F CI_dir/
+# e means ext format
+$ lsattr .
+--------------e----- ./lost+found
+--------------e-F--- ./CI_dir
+$ cd /home/anel/mariadb/server/builds/10.3/mysql-test
+$ rm -rf var/
+$ ln -s /home/anel/mariadb/test/CI_dir/var/ ./var
+$ ./mtr main.grant_lowercase_fs --record
+worker[1] Using MTR_BUILD_THREAD 300, with reserved ports 16000..16019
+main.grant_lowercase_fs                  [ pass ]      9
+--------------------------------------------------------------------------
+
+$ sudo umount test
+
